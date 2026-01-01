@@ -1,10 +1,26 @@
 ---
-title: "UI/UX PRO MAX クイックスタートガイド"
+title: "UI/UX PRO MAX 2.0 クイックスタートガイド【日本語まとめ】"
 emoji: "🎨"
 type: "tech"
 topics: ["uiux", "claude", "cursor", "ai", "frontend"]
 published: false
 ---
+
+## はじめに
+
+本記事は、**nextlevelbuilder**氏が開発・公開している「**UI/UX PRO MAX**」スキルの紹介記事です。公式ドキュメントを日本語に翻訳し、内容を再構成してまとめたものになります。
+
+素晴らしいスキルを開発・公開してくださっている作者様に感謝いたします。
+
+:::message
+この記事はオリジナルの公式ドキュメントを基に作成しています。最新情報や詳細は、必ず公式リポジトリをご確認ください。
+:::
+
+## 公式リソース
+
+- **GitHubリポジトリ**: [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+- **公式サイト**: [ui-ux-pro-max-skill.nextlevelbuilder.io](https://ui-ux-pro-max-skill.nextlevelbuilder.io)
+- **ライセンス**: MIT
 
 ## 概要
 
@@ -192,12 +208,6 @@ Next.js 15とMUI7を使って、データ分析ダッシュボードを作成し
 - 推奨チャートタイプとライブラリ統合
 - MUI7 + Next.js 15のベストプラクティス
 - レスポンシブグリッドレイアウト
-
-## リソース
-
-- **GitHubリポジトリ**: [https://github.com/nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
-- **公式サイト**: [https://ui-ux-pro-max-skill.nextlevelbuilder.io](https://ui-ux-pro-max-skill.nextlevelbuilder.io)
-- **ライセンス**: MIT
 
 ## バージョン情報
 
