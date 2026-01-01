@@ -1,5 +1,5 @@
 ---
-title: "UI/UX PRO MAX 2.0 クイックスタートガイド【日本語まとめ】"
+title: "UI/UX PRO MAX クイックスタートガイド"
 emoji: "🎨"
 type: "tech"
 topics: ["uiux", "claude", "cursor", "ai", "frontend"]
