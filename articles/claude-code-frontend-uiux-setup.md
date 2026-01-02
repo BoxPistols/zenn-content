@@ -158,6 +158,32 @@ cd /path/to/your/project
 uipro init --ai claude
 ```
 
+:::message
+**個人用 vs チーム共有**
+
+`uipro init` を実行すると `.claude/skills/` 配下に多数のファイルが生成されます。
+配置場所によってgit管理の方針が変わります：
+
+| 配置場所 | 用途 | git管理 |
+|---------|------|---------|
+| `~/.claude/skills/` | 個人用 | しない |
+| `プロジェクト/.claude/skills/` | チーム共有 | する |
+
+**推奨**: 汎用スキル（UI/UX PRO MAX等）はホームディレクトリにインストール。
+プロジェクト固有のカスタムスキルのみリポジトリで共有。
+
+```bash
+# ホームディレクトリにインストール（推奨）
+cd ~
+uipro init --ai claude
+```
+
+プロジェクトに置く場合は `.gitignore` に追加：
+```gitignore
+.claude/skills/ui-ux-pro-max/
+```
+:::
+
 ### 使い方
 
 UI/UX関連のリクエストをすると自動起動します：
@@ -182,14 +208,22 @@ MCPサーバーを設定することで、Claude Codeの参照精度が向上し
 
 FigmaデザインをClaude Codeから直接参照できます。
 
+**セットアップ手順：**
+
+1. **Figma Access Token を取得**
+   - Figma → Settings → Account → Personal access tokens
+   - 「Generate new token」でトークンを生成
+
+2. **`~/.claude.json` に設定を追加**
+
 ```json
 {
   "mcpServers": {
     "figma": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-figma"],
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
       "env": {
-        "FIGMA_ACCESS_TOKEN": "your-token-here"
+        "FIGMA_API_KEY": "figd_xxxxxx..."
       }
     }
   }
@@ -197,9 +231,18 @@ FigmaデザインをClaude Codeから直接参照できます。
 ```
 
 **活用例：**
-```
+
+```bash
+# デザインからコンポーネント生成
 このFigmaファイルのデザインをReactコンポーネントとして実装して
-https://www.figma.com/file/xxxxx
+https://www.figma.com/design/xxxxx/ProjectName?node-id=123-456
+
+# デザイントークンの抽出
+このFigmaファイルからカラーパレットとタイポグラフィを抽出して、
+Tailwind CSS の設定ファイルを生成して
+
+# デザインレビュー
+実装したコンポーネントとFigmaデザインを比較して、差異をレポートして
 ```
 
 ### MUI MCP
@@ -219,7 +262,7 @@ MUIコンポーネントのドキュメントを正確に参照できます。
 
 ### Playwright MCP
 
-E2Eテストやビジュアルリグレッションテストに活用できます。
+ブラウザ操作やスクリーンショット取得に活用できます。
 
 ```json
 {
@@ -233,29 +276,69 @@ E2Eテストやビジュアルリグレッションテストに活用できま�
 ```
 
 **活用例：**
-- コンポーネントのスクリーンショット取得
-- インタラクションテストの自動生成
-- レスポンシブ表示の確認
+
+```bash
+# 開発サーバーの画面をキャプチャ
+localhost:3000 のトップページをスクリーンショットして
+
+# レスポンシブ確認
+localhost:3000 をモバイル（375px）とデスクトップ（1440px）で
+スクリーンショットを取って比較して
+
+# インタラクションテスト
+ログインフォームに入力してボタンをクリック、
+遷移先の画面をキャプチャして
+```
 
 ### Storybook / Chromatic 連携
 
 Storybookを活用したコンポーネント開発フローを強化できます。
+
+**Storybook MCPの設定：**
 
 ```json
 {
   "mcpServers": {
     "storybook": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-storybook"]
+      "args": ["-y", "storybook-mcp-server", "--port", "6006"]
     }
   }
 }
 ```
 
-**活用例：**
+**Chromatic（ビジュアルテスト）との連携：**
+
+```bash
+# Chromaticのセットアップ
+npm install --save-dev chromatic
+npx chromatic --project-token=your-token
 ```
-Buttonコンポーネントの全バリエーションをStorybookで確認して、
-デザインと実装の差異をレポートして
+
+`~/.claude/settings.json` に自動承認を追加：
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx chromatic:*)",
+      "Bash(npm run storybook:*)"
+    ]
+  }
+}
+```
+
+**活用例：**
+
+```bash
+# Storybookでコンポーネント確認
+Buttonコンポーネントの全バリエーションをStorybookで確認して
+
+# ビジュアルリグレッションテスト
+Chromaticでビジュアルテストを実行して、変更点をレポートして
+
+# コンポーネントカタログ生成
+src/components配下の全コンポーネントのStorybookストーリーを生成して
 ```
 
 ---
@@ -284,34 +367,71 @@ Buttonコンポーネントの全バリエーションをStorybookで確認し�
 
 ## 実践ワークフロー例
 
-### デザイン → 実装フロー
+### ワークフロー1: Figma → React コンポーネント
 
 ```mermaid
 graph LR
-    A[Figmaデザイン] --> B[Figma MCP参照]
+    A[Figmaデザイン] --> B[Figma MCP]
     B --> C[UI/UX PRO MAX]
     C --> D[コンポーネント実装]
-    D --> E[Storybook確認]
-    E --> F[Playwright E2Eテスト]
+    D --> E[Storybook]
+    E --> F[Chromatic]
 ```
 
-1. **Figma参照**: デザインファイルのURLを渡す
-2. **スキル活用**: UI/UX PRO MAXが適切なスタイル・ガイドラインを適用
-3. **実装**: コンポーネントを生成
-4. **確認**: Storybookで各状態を確認
-5. **テスト**: Playwrightでビジュアルテスト
-
-### プロンプト例
+**プロンプト例：**
 
 ```
-# 新規コンポーネント作成
 このFigmaデザインを参考に、MUI + Tailwindでカードコンポーネントを実装して。
-レスポンシブ対応、ダークモード対応、アクセシビリティも考慮して。
-Storybookのストーリーも作成して。
+https://www.figma.com/design/xxxxx?node-id=123-456
 
-# 既存コンポーネントのレビュー
-src/components/Button.tsxをUXガイドラインに基づいてレビューして。
-改善点があれば修正して。
+要件：
+- レスポンシブ対応（モバイル/タブレット/デスクトップ）
+- ダークモード対応
+- アクセシビリティ（WCAG 2.1 AA）
+- Storybookストーリーも作成
+```
+
+### ワークフロー2: デザインシステム構築
+
+**プロンプト例：**
+
+```
+プロジェクトのデザインシステムを構築して。
+
+1. Figmaからデザイントークン（カラー、タイポグラフィ、スペーシング）を抽出
+2. Tailwind CSS設定ファイルを生成
+3. MUIテーマファイルを生成
+4. 基本コンポーネント（Button、Input、Card）を実装
+5. Storybookでドキュメント化
+```
+
+### ワークフロー3: 既存UIのリファクタリング
+
+**プロンプト例：**
+
+```
+src/components/配下のコンポーネントをレビューして。
+
+確認観点：
+- UXガイドライン準拠（タッチターゲット、コントラスト比）
+- アクセシビリティ（aria属性、キーボード操作）
+- レスポンシブ対応
+- パフォーマンス（不要な再レンダリング）
+
+問題があれば修正して、改善レポートを作成して。
+```
+
+### ワークフロー4: ビジュアルリグレッションテスト
+
+**プロンプト例：**
+
+```
+以下の手順でビジュアルテストを実施して：
+
+1. Storybookを起動
+2. 全コンポーネントのスクリーンショットを取得
+3. Chromaticにアップロード
+4. 前回からの変更点をレポート
 ```
 
 ---
