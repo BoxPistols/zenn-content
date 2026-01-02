@@ -3,7 +3,33 @@ title: "GitHubラベル管理を自動化！labels-configでチーム開発を�
 emoji: "🏷️"
 type: "tech"
 topics: ["github", "cli", "nodejs", "npm", "開発効率化"]
-published: false
+published: true
+---
+
+# TL;DR - 忙しい人向け（1分で導入）
+
+:::message
+**前提:** GitHub CLI (`gh`) がインストール・認証済みであること
+:::
+
+```bash
+# 1. インストール
+npm install -g @asagiri-design/labels-config
+
+# 2. 日本語ラベルテンプレートで設定ファイル作成
+labels-config init prod-ja --file labels.json
+
+# 3. ドライランで確認（実際には変更しない）
+labels-config sync --owner YOUR_ORG --repo YOUR_REPO --file labels.json --delete-extra --dry-run
+
+# 4. 実行（既存の英語ラベルを削除して日本語ラベルに置き換え）
+labels-config sync --owner YOUR_ORG --repo YOUR_REPO --file labels.json --delete-extra
+```
+
+**ポイント:**
+- `--delete-extra` で設定ファイルにないラベル（GitHubデフォルトの英語ラベル等）を削除
+- 必ず `--dry-run` で確認してから実行
+
 ---
 
 # はじめに
@@ -354,51 +380,6 @@ jobs:
 
 # トラブルシューティング
 
-## HTTP 401: Bad credentials エラー
-
-最もよくあるエラーです。`gh auth status` で認証OKなのに、以下のエラーが出る場合：
-
-```
-HTTP 401: Bad credentials (https://api.github.com/graphql)
-Try authenticating with:  gh auth login
-```
-
-**原因**: 環境変数 `GITHUB_TOKEN` に古いトークンが設定されている
-
-**確認方法**:
-```bash
-# 環境変数を確認
-echo $GITHUB_TOKEN
-
-# Node.js経由でも確認
-node -e "console.log(process.env.GITHUB_TOKEN)"
-```
-
-**解決方法**:
-
-```bash
-# 一時的に環境変数を無効化して実行
-env -u GITHUB_TOKEN labels-config sync \
-  --owner user --repo repo --file labels.json
-
-# または unset で削除
-unset GITHUB_TOKEN
-```
-
-**恒久的な解決**: `.zshrc` や `.bashrc` から古い `GITHUB_TOKEN` を削除
-
-```bash
-# どこで設定されているか確認
-grep -r "GITHUB_TOKEN" ~/.zshrc ~/.bashrc ~/.zprofile 2>/dev/null
-
-# 該当行を削除後、シェルを再読み込み
-source ~/.zshrc
-```
-
-:::message
-gh CLI は独自の認証情報（keyring）を使用するため、`GITHUB_TOKEN` 環境変数は不要です。古いトークンが残っていると競合してエラーになります。
-:::
-
 ## 認証エラーが出る
 
 ```bash
@@ -407,9 +388,6 @@ gh auth status
 
 # 再認証
 gh auth login
-
-# 認証をリフレッシュ
-gh auth refresh
 ```
 
 ## バリデーションエラー
@@ -442,45 +420,6 @@ gh api rate_limit
 
 # 制限に達した場合は60分待つ
 ```
-
-## GitHubデフォルトラベルを一括削除したい
-
-新しいリポジトリには英語のデフォルトラベル（bug, enhancement, documentation等）が自動作成されます。これらを削除して、自分のラベルだけにしたい場合：
-
-```bash
-# まずdry-runで削除対象を確認
-labels-config sync \
-  --owner user \
-  --repo repo \
-  --file labels.json \
-  --delete-extra \
-  --dry-run \
-  --verbose
-```
-
-出力例：
-```
-[DRY RUN] Would delete label: bug
-[DRY RUN] Would delete label: documentation
-[DRY RUN] Would delete label: duplicate
-[DRY RUN] Would delete label: enhancement
-...
-```
-
-問題なければ `--dry-run` を外して実行：
-
-```bash
-labels-config sync \
-  --owner user \
-  --repo repo \
-  --file labels.json \
-  --delete-extra \
-  --verbose
-```
-
-:::message alert
-`--delete-extra` は設定ファイルにないラベルを**すべて削除**します。既存のIssue/PRに付いているラベルも外れるので、必ず `--dry-run` で確認してから実行してください。
-:::
 
 # ライブラリとしての使用
 
