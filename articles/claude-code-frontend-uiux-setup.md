@@ -3,7 +3,7 @@ title: "フロントエンド・UI/UXデザイナー向け Claude Code 設定ガ
 emoji: "🎨"
 type: "tech"
 topics: ["claudecode", "frontend", "uiux", "figma", "mcp"]
-published: false
+published: true
 ---
 
 ## はじめに
@@ -18,45 +18,91 @@ published: false
 
 ## TL;DR - 今すぐ使いたい人向け
 
-**最低限これだけやれば効果を実感できる設定**を厳選しました。
+**3ステップの設定で、こんなことが実現できます：**
 
-### 1. UI/UX PRO MAX スキルを導入
+| 設定 | 実現すること |
+|------|-----------|
+| **1. frontend-design スキル** | 「ボタン作ってください」と指示するだけで、Claude Code が自動的に**見栄えが良い、プロフェッショナルなUI**を生成。グラスモーフィズム、ニューモーフィズムなど最新デザイントレンドも自動適用 |
+| **2. Figma連携** | Figmaで作ったデザインを Claude Code で直接参照 → デザイン完全準拠＆見栄えの良いReactコンポーネント自動生成 |
+| **3. CLAUDE.md** | 毎回「React + TypeScript」「このカラーパレットを使って」などの指示の手間をゼロに |
+
+**結果:** 指示するだけで、見栄えが良いプロフェッショナルなUIコンポーネントが自動で完成。デザイナーもエンジニアも「え、これ手動で作ったの？」と言わせるレベルのクオリティが実現できます。
+
+---
+
+### セットアップ手順（5分で完了）
+
+#### 1. frontend-design スキルを高速インストール
+
+このスキルが Claude Code に導入されると、フロントエンド関連のリクエストを検知して、**見栄えの良いプロフェッショナルなUIデザイン**（Glassmorphism、Neumorphism、Bento Grid等の最新トレンド、美しいカラーパレット、洗練されたタイポグラフィなど）を自動的に参照・適用するようになります。
+
+ターミナルで以下を実行：
 
 ```bash
-npm install -g uipro-cli
-cd /path/to/your/project
-uipro init --ai claude
+mkdir -p ~/.claude/skills/frontend-design
+curl -o ~/.claude/skills/frontend-design/SKILL.md https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
 ```
 
-→ 57種のUIスタイル、95種のカラーパレット、UXガイドラインが即座に使えるようになります。
+→ これ以降、「カードコンポーネントを作ってください」と言うだけで、自動的に**グラフィックデザイン的に美しい、今風のUIが生成**されます。
 
-### 2. Figma MCP を設定
+**または GUI方式（手動が楽な場合）:**
+```bash
+claude /plugin
+# Marketplaces > Browse plugins > frontend-design + figma をインストール
+```
 
-`~/.claude.json` に追加：
+#### 2. Figma Access Token を設定
+
+Figma MCP（Model Context Protocol）サーバーをセットアップすることで、Figmaで作ったデザイン（カラー、レイアウト、タイポグラフィなど）を Claude Code が直接読み込み、**それをそのまま見栄え良くReactコンポーネント化**できるようになります。
+
+`~/.claude.json` に追加（なければファイルを新規作成）：
 
 ```json
 {
   "mcpServers": {
     "figma": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-figma"]
+      "args": ["-y", "@anthropic/mcp-figma"],
+      "env": {
+        "FIGMA_API_KEY": "figd_xxxxxxxxxxxx"
+      }
     }
   }
 }
 ```
 
-→ FigmaデザインをClaude Codeから直接参照・コード化できます。
+**APIキー取得方法:**
+- Figma → Settings → Account → Personal access tokens
+- 「Generate new token」で新規作成 → `figd_` で始まるトークンをコピー
 
-### 3. CLAUDE.md にフロントエンド向けルールを記載
+→ これで「このFigmaのデザインをReactコンポーネントにして」と指示するだけで、Figmaで作ったデザインの見栄えをそのまま実装できるようになります。デザイナーとエンジニアの「見た目のズレ」が完全になくなります。
 
-`~/.claude/CLAUDE.md` を作成：
+#### 3. CLAUDE.md にプロジェクトのデザイン・スタイルを記載
 
-```markdown
-## フロントエンド開発ルール
-- UIコンポーネントはアクセシビリティ（WCAG 2.1 AA）を考慮する
-- レスポンシブデザインはモバイルファーストで実装
-- 使用スタック: React/Next.js + Tailwind CSS + MUI
+プロジェクト共通の「デザインシステム」や「見栄えの方針」を定義することで、毎回「MUIで作ってください」「このカラーパレット使ってください」等を指示する手間が省けます。
+
+```bash
+cat > ~/.claude/CLAUDE.md << 'EOF'
+## フロントエンド開発ガイド
+
+### 使用技術
+- React/Next.js + TypeScript
+- Tailwind CSS + MUI
+- Storybook 8
+
+### デザイン原則（見た目の統一）
+- カラーパレット: [プロジェクトのメインカラー・サブカラー指定]
+- タイポグラフィ: [使用フォント]
+- スタイル: モダンで洗練された見た目を優先
+- レスポンシブ: モバイル・タブレット・デスクトップで美しく表示
+
+### コーディング規約
+- コンポーネント: 関数型 + TypeScript
+- スタイル: Tailwind CSS 優先、複雑な場合は MUI sx プロップ
+EOF
 ```
+
+→ 以降、単に「ボタンコンポーネント作ってください」とだけ指示すれば、自動的に上記デザイン方針が適用され、見栄えの統一がされます。
 
 ---
 
@@ -343,6 +389,140 @@ src/components配下の全コンポーネントのStorybookストーリーを生
 
 ---
 
+## プラグイン編 - UI/UXデザイン向けプラグイン
+
+Claude Codeのプラグイン・スキル機能を活用することで、フロントエンド・UI/UX開発に特化したツールを統合できます。
+
+### インストール方法（2つの方式）
+
+**方式1: 高速ダウンロード（推奨 - TL;DR）**
+
+```bash
+# frontend-design スキルを直接ダウンロード
+mkdir -p ~/.claude/skills/frontend-design
+curl -o ~/.claude/skills/frontend-design/SKILL.md \
+  https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
+```
+
+**方式2: GUI プラグインマーケットプレイス**
+
+```bash
+claude /plugin
+# Marketplaces > Browse plugins (45) から検索してインストール
+```
+
+### TL;DR で推奨する主要プラグイン
+
+#### 1. frontend-design スキル（優先度: 最高）
+
+**機能:**
+- UI/UXデザイン仕様の自動参照
+- レスポンシブデザイン実装のガイダンス
+- WCAG準拠ガイドラインの自動適用
+- モダンCSSパターン（Grid、Flexbox等）の参照
+
+**インストール済みの確認:**
+```bash
+ls ~/.claude/skills/frontend-design/SKILL.md
+# ファイルが存在すれば OK
+```
+
+#### 2. figma プラグイン / MCP（優先度: 高）
+
+**機能:**
+- Figma MCP サーバーを統合（TL;DR Step 2で設定）
+- Figmaデザインファイルの直接参照
+- デザイン → コンポーネント自動生成
+- リアルタイムデザイン更新対応
+
+**設定済みの確認:**
+```bash
+cat ~/.claude.json | grep -A 5 "figma"
+# mcpServers.figma が設定されていれば OK
+```
+
+### プラグイン有効化確認
+
+インストール後、Claude Code を再起動してプラグインを認識させます：
+
+```bash
+claude /plugin
+# Installed タブで以下が表示されることを確認
+#   - frontend-design
+#   - figma
+```
+
+### 実装例
+
+プラグイン導入後のリクエスト例：
+
+```
+プロダクト用のカードコンポーネントを実装して。
+
+要件：
+- React + TypeScript
+- Tailwind CSS + MUI
+- アクセシビリティ対応（WCAG 2.1 AA）
+- レスポンシブデザイン（モバイル/タブレット/デスクトップ）
+- ダークモード対応
+```
+
+**結果:**
+- `frontend-design` プラグインが UI/UXガイドラインを自動参照
+- `figma` MCPが Figmaデザイン仕様を適用
+- アクセシビリティ対応のプロダクション品質コンポーネント生成
+
+### Installed プラグイン管理
+
+インストール済みプラグインの確認・管理：
+
+```
+/plugin > Installed
+
+表示される情報：
+- プラグイン名と説明
+- インストール数（人気度）
+- 更新日時
+- 無効化 / 削除オプション
+```
+
+:::message
+**推奨プラグイン構成（優先度順）**
+
+フロントエンド・UI/UXデザイナー向け：
+
+| プラグイン | 用途 | 優先度 |
+|-----------|------|--------|
+| **frontend-design** | UI/UX実装ガイダンス | ⭐ 最優先 |
+| **figma** | Figmaデザイン連携（MCP + Skills） | ⭐ 最優先 |
+| pr-review-toolkit | コードレビュー・品質確認 | 推奨 |
+| accessibility-checker | WCAG準拠確認 | 推奨 |
+
+**インストール手順：**
+```bash
+claude /plugin
+# Marketplaces > Browse plugins (45) を開く
+# 上記の「⭐ 最優先」の2つを検索してインストール
+```
+:::
+
+### プラグインの自動更新設定
+
+Marketplaces から自動更新を有効化：
+
+```
+/plugin > Marketplaces > claude-plugins-official
+  ✓ Auto-update enabled
+    (Claude Codeが定期的にプラグインを更新)
+```
+
+**最終更新確認例：**
+```
+Updated 2026/1/14
+```
+
+---
+
 ## 自動承認設定
 
 参照系の操作を自動承認することで、ワークフローがスムーズになります。
@@ -434,18 +614,97 @@ src/components/配下のコンポーネントをレビューして。
 4. 前回からの変更点をレポート
 ```
 
+### ワークフロー5: プラグイン + Figma連携でUI/UXを高速実装
+
+```mermaid
+graph LR
+    A[TL;DRで推奨プラグインをインストール] --> B["frontend-design<br/>+ figma"]
+    B --> C[Figmaデザインを参照]
+    C --> D[UI/UX実装リクエスト]
+    D --> E[プラグインが自動ガイダンス]
+    E --> F["React実装<br/>+ アクセシビリティ"]
+    F --> G[レスポンシブ確認]
+    G --> H[Storybook登録]
+```
+
+**推奨セットアップ順序：**
+
+1. **プラグイン一括インストール（TL;DR参照）**
+```bash
+claude /plugin
+# Marketplaces > Browse plugins から以下をインストール：
+# - frontend-design
+# - figma
+```
+
+2. **Figma APIキーを設定（TL;DR参照）**
+```bash
+# ~/.claude.json に Figma APIキーを追加
+# これで Figma ファイルを直接 Claude Code から参照可能に
+```
+
+3. **デザイン実装リクエスト例**
+
+Figmaファイルを参照しながら実装：
+```
+このFigmaデザインをもとに、カードコンポーネントを実装して。
+https://www.figma.com/design/xxxxx/ProjectName?node-id=123-456
+
+要件：
+- React + TypeScript
+- Tailwind CSS + MUI
+- レスポンシブ対応（モバイル/タブレット/デスクトップ）
+- ダークモード対応
+- WCAG 2.1 AA準拠
+```
+
+**プラグインの自動ガイダンス**：
+- `frontend-design`: UI/UXガイドライン、ベストプラクティスを自動参照
+- `figma`: Figmaデザイン仕様を直接参照 → コンポーネント実装へ
+- 結果：デザイン完全準拠 + アクセシビリティ対応のコンポーネントが生成
+
 ---
 
 ## まとめ
 
-| 設定 | 効果 |
-|------|------|
-| CLAUDE.md | 毎回の指示入力を削減 |
-| UI/UX PRO MAX | デザインリソース・ガイドラインを自動参照 |
-| Figma MCP | デザイン→実装の橋渡し |
-| Storybook/Playwright | 品質担保・テスト自動化 |
+### 各設定の効果
 
-フロントエンド・UI/UX開発において、これらの設定を組み合わせることで、デザインから実装、テストまでのワークフローを大幅に効率化できます。
+| 設定 | 効果 | セクション |
+|------|------|-----------|
+| **プラグイン（frontend-design + figma）** | UI/UX実装の自動ガイダンス | TL;DR |
+| **Figma APIキー設定** | Figmaデザイン直接参照 | TL;DR |
+| **CLAUDE.md** | 毎回の指示入力を削減 | TL;DR |
+| UI/UX PRO MAX | デザインリソース・ガイドライン | Skills編 |
+| Storybook/Playwright | 品質担保・テスト自動化 | MCP編 |
+| 自動承認設定 | 参照系操作の効率化 | その他 |
+
+### 実装ワークフロー
+
+```
+TL;DR3ステップ
+  ↓
+基本設定完了
+  ↓
+プラグイン自動ガイダンス + Figma連携
+  ↓
+デザイン完全準拠の高品質UI実装
+  ↓
+Storybook/Chromaticで品質確認
+```
+
+### 推奨セットアップ（優先度順）
+
+**必須（TL;DR）:**
+1. `claude /plugin` でfrontend-design + figmaプラグインをインストール
+2. Figma APIキーを `~/.claude.json` に設定
+3. `~/.claude/CLAUDE.md` でフロントエンド開発ルール定義
+
+**推奨（基礎固めの後）:**
+4. UI/UX PRO MAX をホームディレクトリにインストール
+5. Storybook/Playwright MCP設定
+6. 自動承認設定で ワークフロー効率化
+
+フロントエンド・UI/UX開発において、**TL;DRの3ステップだけで効果を実感**でき、その後段階的に高度な設定を追加できます。
 
 ## 参考リンク
 
