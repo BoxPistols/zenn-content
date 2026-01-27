@@ -24,8 +24,21 @@ npm install -g @asagiri-design/labels-config
 labels-sync() {
   local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+
+  # owner/repo を分割
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+
+  # 最初の引数がオプション(--で始まる)かファイル名かを判定
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 
 # 3. 設定を反映
@@ -44,8 +57,15 @@ labels-sync --delete-extra                     # 実行
 npm install -g @asagiri-design/labels-config
 cd ~/projects/my-project
 labels-config init prod-ja --file labels.json
-labels-config sync --repo $(gh repo view --json nameWithOwner -q .nameWithOwner) --file labels.json --dry-run
-labels-config sync --repo $(gh repo view --json nameWithOwner -q .nameWithOwner) --file labels.json --delete-extra
+
+# リポジトリ情報を取得して owner と repo に分割
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+OWNER=$(echo $REPO | cut -d'/' -f1)
+REPO_NAME=$(echo $REPO | cut -d'/' -f2)
+
+# 同期実行
+labels-config sync --owner $OWNER --repo $REPO_NAME --file labels.json --dry-run
+labels-config sync --owner $OWNER --repo $REPO_NAME --file labels.json --delete-extra
 ```
 
 **ポイント:**
@@ -127,8 +147,21 @@ cat << 'EOF' >> ~/.zshrc
 labels-sync() {
   local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+
+  # owner/repo を分割
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+
+  # 最初の引数がオプション(--で始まる)かファイル名かを判定
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 EOF
 
@@ -139,7 +172,10 @@ source ~/.zshrc
 :::details シェル関数を使わない場合
 以下のようにコマンド置換で直接実行することもできます：
 ```bash
-labels-config sync --repo $(gh repo view --json nameWithOwner -q .nameWithOwner) --file labels.json
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+OWNER=$(echo $REPO | cut -d'/' -f1)
+REPO_NAME=$(echo $REPO | cut -d'/' -f2)
+labels-config sync --owner $OWNER --repo $REPO_NAME --file labels.json
 ```
 :::
 
@@ -196,8 +232,20 @@ labels-sync() {
     return 1
   fi
 
+  # owner/repo を分割
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+
+  # 最初の引数がオプション(--で始まる)かファイル名かを判定
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 ```
 
@@ -213,8 +261,20 @@ labels-sync() {
     return 1
   fi
 
+  # owner/repo を分割
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+
+  # 最初の引数がオプション(--で始まる)かファイル名かを判定
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 ```
 
@@ -285,19 +345,40 @@ labels-sync() {
     return 1
   fi
 
+  # owner/repo を分割
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+
+  # 最初の引数がオプション(--で始まる)かファイル名かを判定
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 ```
 
-## 方法3: シンプルエイリアス
+## 方法3: シンプル関数（最小構成）
 
-最小構成で素早く使いたい場合。
+最小構成で素早く使いたい場合。オプション引数には非対応ですが、シンプルです。
 
 ```bash
 # ~/.zshrc または ~/.bashrc に追加
-alias labels-sync='labels-config sync --file labels.json --repo $(gh repo view --json nameWithOwner -q .nameWithOwner)'
+labels-sync() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+  labels-config sync --owner "$owner" --repo "$repo_name" --file labels.json "$@"
+}
 ```
+
+:::message
+この最小版は `labels.json` 固定です。柔軟な使い方をしたい場合は「方法1」を推奨します。
+:::
 
 ## 追加ユーティリティ
 
@@ -330,9 +411,13 @@ labels-export() {
     return 1
   fi
 
+  # owner/repo を分割
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
+
   local output="${1:-labels-exported.json}"
   echo "エクスポート元: $repo"
-  labels-config export --repo "$repo" --output "$output"
+  labels-config export --owner "$owner" --repo "$repo_name" --output "$output"
   echo "保存先: $output"
 }
 ```
@@ -363,16 +448,25 @@ cat << 'EOF' >> ~/.zshrc
 labels-sync() {
   local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 
 labels-export() {
   local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
   local output="${1:-labels-exported.json}"
   echo "エクスポート元: $repo"
-  labels-config export --repo "$repo" --output "$output"
+  labels-config export --owner "$owner" --repo "$repo_name" --output "$output"
 }
 EOF
 
@@ -388,16 +482,25 @@ cat << 'EOF' >> ~/.bashrc
 labels-sync() {
   local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
   echo "同期先: $repo"
-  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+  local file="labels.json"
+  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
+    file="$1"
+    shift
+  fi
+  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
 }
 
 labels-export() {
   local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
   [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  local owner=$(echo "$repo" | cut -d'/' -f1)
+  local repo_name=$(echo "$repo" | cut -d'/' -f2)
   local output="${1:-labels-exported.json}"
   echo "エクスポート元: $repo"
-  labels-config export --repo "$repo" --output "$output"
+  labels-config export --owner "$owner" --repo "$repo_name" --output "$output"
 }
 EOF
 
@@ -471,7 +574,8 @@ labels-sync --delete-extra       # 置き換えモード
 
 ```bash
 labels-config sync \
-  --repo <owner/repo または自動検出> \
+  --owner <オーナー名> \
+  --repo <リポジトリ名> \
   --file <設定ファイル> \
   [オプション]
 ```
@@ -479,10 +583,13 @@ labels-config sync \
 例：
 ```bash
 # リポジトリ自動検出
-labels-config sync --repo $(gh repo view --json nameWithOwner -q .nameWithOwner) --file labels.json
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+OWNER=$(echo $REPO | cut -d'/' -f1)
+REPO_NAME=$(echo $REPO | cut -d'/' -f2)
+labels-config sync --owner $OWNER --repo $REPO_NAME --file labels.json
 
 # 手動指定（CI/CD環境など）
-labels-config sync --repo myorg/myrepo --file labels.json
+labels-config sync --owner myorg --repo myrepo --file labels.json
 ```
 
 ### オプション
@@ -538,12 +645,13 @@ labels-export my-labels.json       # カスタムファイル名で出力
 
 ```bash
 # リポジトリ自動検出
-labels-config export \
-  --repo $(gh repo view --json nameWithOwner -q .nameWithOwner) \
-  --output exported-labels.json
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+OWNER=$(echo $REPO | cut -d'/' -f1)
+REPO_NAME=$(echo $REPO | cut -d'/' -f2)
+labels-config export --owner $OWNER --repo $REPO_NAME --output exported-labels.json
 
 # 手動指定
-labels-config export --repo myorg/myrepo --output exported-labels.json
+labels-config export --owner myorg --repo myrepo --output exported-labels.json
 ```
 
 他のリポジトリにラベルをコピーしたいときに便利です。
@@ -628,7 +736,7 @@ vim labels.json
 labels-config validate labels.json
 
 # 4. 同期（リポジトリ情報は手動指定）
-labels-config sync --repo myorg/new-project --file labels.json
+labels-config sync --owner myorg --repo new-project --file labels.json
 ```
 
 ### 自動検出を使った方法（シェル関数設定済みの場合）
@@ -651,10 +759,10 @@ labels-sync              # 実行
 
 ```bash
 # 1. 既存リポジトリからエクスポート
-labels-config export --repo myorg/main-project --output labels.json
+labels-config export --owner myorg --repo main-project --output labels.json
 
 # 2. 別リポジトリに同期
-labels-config sync --repo myorg/sub-project --file labels.json
+labels-config sync --owner myorg --repo sub-project --file labels.json
 ```
 
 ### 自動検出を使った方法
@@ -681,9 +789,13 @@ labels-sync my-labels.json
 REPOS=("myorg/repo1" "myorg/repo2" "myorg/repo3")
 
 for REPO in "${REPOS[@]}"; do
+  OWNER=$(echo $REPO | cut -d'/' -f1)
+  REPO_NAME=$(echo $REPO | cut -d'/' -f2)
+
   echo "Syncing $REPO..."
   labels-config sync \
-    --repo $REPO \
+    --owner $OWNER \
+    --repo $REPO_NAME \
     --file labels.json \
     --verbose
 done
@@ -766,8 +878,12 @@ jobs:
 
       - name: Sync labels
         run: |
+          REPO="${{ github.repository }}"
+          OWNER=$(echo $REPO | cut -d'/' -f1)
+          REPO_NAME=$(echo $REPO | cut -d'/' -f2)
           labels-config sync \
-            --repo ${{ github.repository }} \
+            --owner $OWNER \
+            --repo $REPO_NAME \
             --file labels.json \
             --verbose
 ```
@@ -775,7 +891,7 @@ jobs:
 これで、`labels.json` をコミットするだけでラベルが自動更新されます。
 
 **ポイント:**
-- `${{ github.repository }}` は自動的に `owner/repo` 形式で展開されます
+- `${{ github.repository }}` は `owner/repo` 形式で展開されるので、分割して使用
 - シェル関数は不要（環境変数を直接使用）
 
 # トラブルシューティング
@@ -829,8 +945,8 @@ labels-config validate labels.json
 labels-sync --dry-run --verbose
 
 # 手動指定の場合
-labels-config sync --repo myorg/myrepo --file labels.json --verbose
-labels-config sync --repo myorg/myrepo --file labels.json --dry-run --verbose
+labels-config sync --owner myorg --repo myrepo --file labels.json --verbose
+labels-config sync --owner myorg --repo myrepo --file labels.json --dry-run --verbose
 ```
 
 ## リポジトリ名が取得できない（自動検出使用時）
