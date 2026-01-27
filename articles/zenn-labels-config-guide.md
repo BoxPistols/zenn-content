@@ -12,6 +12,8 @@ published: true
 **前提:** GitHub CLI (`gh`) がインストール・認証済みであること
 :::
 
+## 基本的な使い方
+
 ```bash
 # 1. インストール
 npm install -g @asagiri-design/labels-config
@@ -24,6 +26,25 @@ labels-config sync --owner YOUR_ORG --repo YOUR_REPO --file labels.json --delete
 
 # 4. 実行（既存の英語ラベルを削除して日本語ラベルに置き換え）
 labels-config sync --owner YOUR_ORG --repo YOUR_REPO --file labels.json --delete-extra
+```
+
+## より便利に：リポジトリ自動検出版
+
+シェル関数を設定すれば、現在のディレクトリから自動でリポジトリを取得できます：
+
+```bash
+# ~/.zshrc または ~/.bashrc に追加
+labels-sync() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  echo "同期先: $repo"
+  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+}
+
+# 使い方（プロジェクトディレクトリで）
+cd ~/projects/my-project
+labels-sync              # labels.json を使用
+labels-sync --dry-run    # 事前確認
 ```
 
 **ポイント:**
@@ -49,6 +70,22 @@ GitHubのIssueやPRに付けるラベル、チームやプロジェクトで統�
 - ドライランで変更をプレビュー
 - 複数リポジトリへの一括同期
 - GitHub Actionsで自動化
+- シェル関数による自動リポジトリ検出（オプション）
+
+## 2つの使い方
+
+**基本的な使い方** - すぐ始められる
+```bash
+labels-config sync --owner myorg --repo myrepo --file labels.json
+```
+
+**より便利な使い方** - ワークフロー改善（シェル関数設定後）
+```bash
+cd ~/projects/myrepo
+labels-sync  # リポジトリ情報は自動検出
+```
+
+この記事では両方の使い方を紹介します。
 
 # クイックスタート（5分で完了）
 
@@ -120,6 +157,234 @@ labels-config sync \
 ```
 
 これで完了です！GitHubリポジトリのラベルが設定ファイルと同期されました。
+
+# ワークフローを改善する便利な設定
+
+毎回 `--owner` と `--repo` を指定するのは面倒です。シェル関数やエイリアスを使って、より効率的なワークフローを構築しましょう。
+
+## 方法1: シェル関数（推奨）
+
+最も柔軟で機能的な方法です。現在のディレクトリから自動的にリポジトリ情報を取得します。
+
+### Zsh の場合
+
+```bash
+# ~/.zshrc に追加
+labels-sync() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+
+  if [[ -z "$repo" ]]; then
+    echo "エラー: Gitリポジトリ内で実行してください"
+    return 1
+  fi
+
+  echo "同期先: $repo"
+  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+}
+```
+
+### Bash の場合
+
+```bash
+# ~/.bashrc に追加
+labels-sync() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+
+  if [[ -z "$repo" ]]; then
+    echo "エラー: Gitリポジトリ内で実行してください"
+    return 1
+  fi
+
+  echo "同期先: $repo"
+  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+}
+```
+
+### 設定の反映
+
+```bash
+# Zsh
+source ~/.zshrc
+
+# Bash
+source ~/.bashrc
+```
+
+### 使い方
+
+```bash
+# プロジェクトディレクトリに移動
+cd ~/projects/my-awesome-project
+
+# デフォルト（labels.json を使用）
+labels-sync
+
+# カスタム設定ファイルを指定
+labels-sync custom-labels.json
+
+# Dry-run で事前確認
+labels-sync --dry-run
+
+# 設定にないラベルを削除
+labels-sync --delete-extra
+
+# カスタムファイル + Dry-run
+labels-sync my-labels.json --dry-run
+```
+
+### 出力例
+
+```
+$ cd ~/projects/my-app
+$ labels-sync --dry-run
+
+同期先: username/my-app
+[dry-run] 以下の変更が適用されます:
+  + bug (color: d73a4a)
+  + enhancement (color: a2eeef)
+  ~ documentation (color: 0075ca -> 0052cc)
+```
+
+## 方法2: GitHub CLI不要版
+
+`gh` コマンドがない環境向け。Git remoteのURLをパースして取得します。
+
+```bash
+# ~/.zshrc または ~/.bashrc に追加
+get-github-repo() {
+  local url=$(git remote get-url origin 2>/dev/null)
+
+  # SSH形式: git@github.com:owner/repo.git
+  # HTTPS形式: https://github.com/owner/repo.git
+  echo "$url" | sed -E 's#(git@|https://)github\.com[:/]##; s#\.git$##'
+}
+
+labels-sync() {
+  local repo=$(get-github-repo)
+
+  if [[ -z "$repo" ]]; then
+    echo "エラー: GitHubリポジトリ内で実行してください"
+    return 1
+  fi
+
+  echo "同期先: $repo"
+  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+}
+```
+
+## 方法3: シンプルエイリアス
+
+最小構成で素早く使いたい場合。
+
+```bash
+# ~/.zshrc または ~/.bashrc に追加
+alias labels-sync='labels-config sync --file labels.json --repo $(gh repo view --json nameWithOwner -q .nameWithOwner)'
+```
+
+## 追加ユーティリティ
+
+### 現在のリポジトリ情報を確認
+
+```bash
+# ~/.zshrc または ~/.bashrc に追加
+repo-info() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+
+  if [[ -z "$repo" ]]; then
+    echo "GitHubリポジトリではありません"
+    return 1
+  fi
+
+  echo "リポジトリ: $repo"
+  echo "URL: https://github.com/$repo"
+}
+```
+
+### ラベルエクスポート（自動リポジトリ検出付き）
+
+```bash
+# ~/.zshrc または ~/.bashrc に追加
+labels-export() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+
+  if [[ -z "$repo" ]]; then
+    echo "エラー: Gitリポジトリ内で実行してください"
+    return 1
+  fi
+
+  local output="${1:-labels-exported.json}"
+  echo "エクスポート元: $repo"
+  labels-config export --repo "$repo" --output "$output"
+  echo "保存先: $output"
+}
+```
+
+### 使用例
+
+```bash
+# 現在のリポジトリ情報を確認
+repo-info
+
+# 現在のリポジトリのラベルをエクスポート
+labels-export
+
+# カスタムファイル名でエクスポート
+labels-export my-labels.json
+```
+
+## ワンライナーセットアップ
+
+以下のコマンドで一括セットアップできます。
+
+### Zsh
+
+```bash
+cat << 'EOF' >> ~/.zshrc
+
+# labels-config 自動リポジトリ検出
+labels-sync() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  echo "同期先: $repo"
+  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+}
+
+labels-export() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  local output="${1:-labels-exported.json}"
+  echo "エクスポート元: $repo"
+  labels-config export --repo "$repo" --output "$output"
+}
+EOF
+
+source ~/.zshrc
+```
+
+### Bash
+
+```bash
+cat << 'EOF' >> ~/.bashrc
+
+# labels-config 自動リポジトリ検出
+labels-sync() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  echo "同期先: $repo"
+  labels-config sync --file "${1:-labels.json}" --repo "$repo" "${@:2}"
+}
+
+labels-export() {
+  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
+  local output="${1:-labels-exported.json}"
+  echo "エクスポート元: $repo"
+  labels-config export --repo "$repo" --output "$output"
+}
+EOF
+
+source ~/.bashrc
+```
 
 # 利用可能なテンプレート
 
@@ -288,6 +553,8 @@ labels-config export \
 
 新しいリポジトリを作ったらすぐにラベルを設定：
 
+### 基本的な方法
+
 ```bash
 # 1. プロジェクトに合ったテンプレートを選択
 labels-config init prod-ja --file labels.json
@@ -302,7 +569,23 @@ labels-config validate labels.json
 labels-config sync --owner myorg --repo new-project --file labels.json
 ```
 
+### 自動検出を使った方法（シェル関数設定済みの場合）
+
+```bash
+# プロジェクトディレクトリで実行するだけ
+cd ~/projects/new-project
+
+# テンプレート作成
+labels-config init prod-ja --file labels.json
+
+# 同期（リポジトリは自動検出）
+labels-sync --dry-run    # まず確認
+labels-sync              # 実行
+```
+
 ## ケース2: 既存ラベルを他リポジトリにコピー
+
+### 基本的な方法
 
 ```bash
 # 1. 既存リポジトリからエクスポート
@@ -312,9 +595,24 @@ labels-config export --owner myorg --repo main-project --file labels.json
 labels-config sync --owner myorg --repo sub-project --file labels.json
 ```
 
+### 自動検出を使った方法
+
+```bash
+# 1. メインプロジェクトでエクスポート
+cd ~/projects/main-project
+labels-export my-labels.json
+
+# 2. サブプロジェクトに移動して同期
+cd ~/projects/sub-project
+labels-sync my-labels.json --dry-run
+labels-sync my-labels.json
+```
+
 ## ケース3: 複数リポジトリへの一括同期
 
 シェルスクリプトで複数リポジトリに同期：
+
+### 標準的な方法
 
 ```bash
 #!/bin/bash
@@ -331,6 +629,43 @@ for REPO in "${REPOS[@]}"; do
     --file labels.json \
     --verbose
 done
+```
+
+### 自動検出を使った方法
+
+```bash
+#!/bin/bash
+# ディレクトリベースで一括同期
+
+PROJECTS=(
+  "~/projects/repo1"
+  "~/projects/repo2"
+  "~/projects/repo3"
+)
+
+for PROJECT in "${PROJECTS[@]}"; do
+  echo "Processing $PROJECT..."
+  cd "$PROJECT" && labels-sync --verbose || echo "Failed: $PROJECT"
+done
+```
+
+## ケース4: チーム全体での統一ラベル運用
+
+チーム共有のラベル設定を簡単に適用：
+
+```bash
+# 1. 共有ラベル設定を取得（共有リポジトリから）
+cd ~/shared-configs
+git clone https://github.com/myteam/label-configs.git
+cd label-configs
+
+# 2. 各プロジェクトで使用
+cd ~/projects/my-project
+labels-sync ~/shared-configs/label-configs/team-labels.json
+
+# または、シンボリックリンクで管理
+ln -s ~/shared-configs/label-configs/team-labels.json labels.json
+labels-sync
 ```
 
 # GitHub Actionsで自動化
@@ -390,6 +725,26 @@ gh auth status
 gh auth login
 ```
 
+## 「Gitリポジトリ内で実行してください」エラー（自動検出使用時）
+
+シェル関数で自動検出を使っている場合のエラー：
+
+```bash
+# 現在地がGitリポジトリか確認
+git status
+
+# リモートが設定されているか確認
+git remote -v
+
+# GitHub CLIでリポジトリ情報を取得できるか確認
+gh repo view --json nameWithOwner
+```
+
+解決方法：
+- Gitリポジトリのルートディレクトリで実行する
+- リモートが正しく設定されているか確認する
+- GitHub CLIが認証されているか確認する（`gh auth status`）
+
 ## バリデーションエラー
 
 ```bash
@@ -410,6 +765,23 @@ labels-config sync --owner user --repo repo --file labels.json --verbose
 
 # dry-runで変更内容を確認
 labels-config sync --owner user --repo repo --file labels.json --dry-run --verbose
+
+# 自動検出を使っている場合
+labels-sync --dry-run --verbose
+```
+
+## リポジトリ名が取得できない（自動検出使用時）
+
+```bash
+# 手動で確認
+gh repo view --json nameWithOwner
+
+# リモートURLを確認
+git remote get-url origin
+
+# 正しいリモートか確認（GitHubのリポジトリか）
+# SSH: git@github.com:owner/repo.git
+# HTTPS: https://github.com/owner/repo.git
 ```
 
 ## レート制限
@@ -419,6 +791,22 @@ labels-config sync --owner user --repo repo --file labels.json --dry-run --verbo
 gh api rate_limit
 
 # 制限に達した場合は60分待つ
+```
+
+## シェル関数が動作しない
+
+```bash
+# 関数が定義されているか確認
+type labels-sync
+
+# 設定ファイルが読み込まれているか確認
+# Zsh
+source ~/.zshrc
+
+# Bash
+source ~/.bashrc
+
+# 新しいターミナルセッションを開く
 ```
 
 # ライブラリとしての使用
@@ -455,7 +843,15 @@ npm install @asagiri-design/labels-config
 - **GitHub Actionsで自動化**できる
 - **複数リポジトリに一括同期**できる
 
+さらに、シェル関数を使った自動リポジトリ検出により：
+
+- **プロジェクトディレクトリで即座に実行**できる
+- **owner/repo の手動指定が不要**になる
+- **複数プロジェクト間の移動がスムーズ**になる
+
 GitHub CLIの認証をそのまま使えるので、トークン管理の手間もありません。
+
+基本的な使い方から、ワークフローを改善する便利な設定まで、プロジェクトの規模や用途に合わせて選択できます。
 
 ぜひチーム開発のラベル管理に活用してみてください！
 
