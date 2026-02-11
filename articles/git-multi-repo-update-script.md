@@ -37,13 +37,13 @@ NC='\033[0m' # No Color
 # ベースディレクトリ（スクリプトのある場所）
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# リポジトリ一覧（自分の環境に合わせて編集）
-REPOS=(
-    "project-a"
-    "project-b"
-    "libs/common-utils"
-    "apps/frontend"
-)
+# リポジトリ一覧（配下の.gitを自動検出）
+REPOS=()
+while IFS= read -r -d '' git_dir; do
+    repo_path="${git_dir%/.git}"
+    repo_rel="${repo_path#"$BASE_DIR"/}"
+    REPOS+=("$repo_rel")
+done < <(find "$BASE_DIR" -type d -name .git -prune -print0)
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}  Git リポジトリ一括更新スクリプト${NC}"
@@ -143,39 +143,49 @@ echo -e "${BLUE}完了しました！${NC}"
 ```
 ~/dev/
 ├── git-update-all.sh  ← ここに配置
-├── project-a/
-├── project-b/
+├── project-a/         ← 自動検出される
+├── project-b/         ← 自動検出される
 └── apps/
-    └── frontend/
+    └── frontend/      ← 自動検出される
 ```
 
-### 2. リポジトリ一覧を編集
-
-`REPOS` 配列を自分の環境に合わせて編集します。
-
-```bash
-REPOS=(
-    "project-a"
-    "project-b"
-    "apps/frontend"
-)
-```
-
-### 3. 実行権限を付与して実行
+### 2. 実行権限を付与して実行
 
 ```bash
 chmod +x git-update-all.sh
 ./git-update-all.sh
 ```
 
+配下の `.git` ディレクトリを自動検出するため、リポジトリ一覧を手動で編集する必要はありません。
+
 ## 機能
 
 | 機能 | 説明 |
 |------|------|
+| リポジトリ自動検出 | 配下の `.git` ディレクトリを `find` で自動検出 |
 | 自動ブランチ切り替え | main以外のブランチにいる場合、自動でmainに切り替え |
 | ローカル変更の保護 | 未コミットの変更がある場合、自動でstash→復元 |
 | カラー出力 | 成功/失敗が一目でわかる |
 | サマリー表示 | 最後に成功・失敗数を表示 |
+
+## 自動検出の仕組み
+
+スクリプト配置ディレクトリ配下の `.git` フォルダを `find` で再帰的に検出します。
+
+```bash
+# リポジトリ一覧（配下の.gitを自動検出）
+REPOS=()
+while IFS= read -r -d '' git_dir; do
+    repo_path="${git_dir%/.git}"
+    repo_rel="${repo_path#"$BASE_DIR"/}"
+    REPOS+=("$repo_rel")
+done < <(find "$BASE_DIR" -type d -name .git -prune -print0)
+```
+
+**ポイント:**
+- `find ... -print0` と `read -d ''` でスペースを含むパスにも対応
+- `-prune` で `.git` ディレクトリ内への再帰を防止
+- 相対パスに変換して見やすく表示
 
 ## カスタマイズ例
 
@@ -190,19 +200,18 @@ fi
 git pull origin master 2>&1
 ```
 
-### 自動でリポジトリを検出する
+### 検出の深さを制限する
 
-手動でリストを書く代わりに、`.git` フォルダを自動検出する方法もあります。
+ネストが深い構成で直下のリポジトリだけ更新したい場合は `-maxdepth` を使います。
 
 ```bash
-# REPOS配列の代わりに
-REPOS=$(find . -maxdepth 2 -name ".git" -type d | sed 's|/\.git||' | sed 's|^\./||')
+done < <(find "$BASE_DIR" -maxdepth 2 -type d -name .git -prune -print0)
 ```
 
 ## 動作環境
 
 | OS | 動作 |
-|----|------|
+|-----|------|
 | macOS (Catalina以降) | ✅ |
 | Linux (Ubuntu等) | ✅ |
 | Windows WSL2 (Ubuntu) | ✅ |
