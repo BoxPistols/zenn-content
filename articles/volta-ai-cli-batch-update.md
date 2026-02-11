@@ -3,7 +3,7 @@ title: "Volta管理のAI CLIツール（Copilot・Gemini・Claude）を一括ア
 emoji: "🔧"
 type: "tech"
 topics: ["volta", "shellscript", "copilot", "gemini", "claude"]
-published: false
+published: true
 ---
 
 ## はじめに
