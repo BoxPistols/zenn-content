@@ -3,7 +3,7 @@ title: "Volta管理のAI CLIツール（Copilot・Gemini・Claude）を一括ア
 emoji: "🔧"
 type: "tech"
 topics: ["volta", "shellscript", "copilot", "gemini", "claude"]
-published: false
+published: true
 ---
 
 ## はじめに
@@ -35,9 +35,14 @@ zsh or bash
 volta install @github/copilot
 volta install @google/gemini-cli
 
-# Claude Code は独自管理
+# Claude Code は独自管理（インストーラー経由）
 # ~/.claude/local/ に実体がある
 ```
+
+:::message
+**Claude Code を Volta で統一管理する場合**
+Claude Code も npm パッケージ（`@anthropic-ai/claude-code`）として公開されているため、`volta install @anthropic-ai/claude-code` でインストールすれば、3つすべてを Volta で統一管理できます。その場合は `claude update` の代わりに `volta install @anthropic-ai/claude-code@latest` で更新可能です。本記事では、公式推奨のインストーラー経由で導入した環境を前提としています。
+:::
 
 ## 3つのツールの管理方法の違い
 
@@ -153,18 +158,34 @@ log_warn()    { echo -e "${YELLOW}[WARN]${RESET} $*"; }
 log_error()   { echo -e "${RED}[ERR]${RESET}  $*"; }
 log_header()  { echo -e "\n${BOLD}${CYAN}=== $* ===${RESET}"; }
 
+extract_semver() {
+  grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true
+}
+
 get_version() {
   local tool="$1"
-  case "$tool" in
-    copilot) copilot --version 2>/dev/null | head -1 || echo "未インストール" ;;
-    gemini)  gemini --version 2>/dev/null | head -1 || echo "未インストール" ;;
-    claude)  claude --version 2>/dev/null | head -1 || echo "未インストール" ;;
-  esac
+  local raw
+  raw=$("$tool" --version 2>/dev/null | head -1) || true
+  if [ -z "$raw" ]; then
+    echo "未インストール"
+  else
+    local parsed
+    parsed=$(echo "$raw" | extract_semver)
+    echo "${parsed:-$raw}"
+  fi
 }
 
 get_latest_npm_version() {
   local pkg="$1"
-  npm view "$pkg" version 2>/dev/null || echo "取得失敗"
+  local raw
+  raw=$(npm view "$pkg" version 2>/dev/null) || true
+  if [ -z "$raw" ]; then
+    echo "取得失敗"
+  else
+    local parsed
+    parsed=$(echo "$raw" | extract_semver)
+    echo "${parsed:-$raw}"
+  fi
 }
 
 check_versions() {
