@@ -159,21 +159,19 @@ log_error()   { echo -e "${RED}[ERR]${RESET}  $*"; }
 log_header()  { echo -e "\n${BOLD}${CYAN}=== $* ===${RESET}"; }
 
 extract_semver() {
-  grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1
+  grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true
 }
 
 get_version() {
   local tool="$1"
   local raw
-  case "$tool" in
-    copilot) raw=$(copilot --version 2>/dev/null | head -1) ;;
-    gemini)  raw=$(gemini --version 2>/dev/null | head -1) ;;
-    claude)  raw=$(claude --version 2>/dev/null | head -1) ;;
-  esac
+  raw=$("$tool" --version 2>/dev/null | head -1) || true
   if [ -z "$raw" ]; then
     echo "未インストール"
   else
-    echo "$raw" | extract_semver
+    local parsed
+    parsed=$(echo "$raw" | extract_semver)
+    echo "${parsed:-$raw}"
   fi
 }
 
@@ -184,7 +182,9 @@ get_latest_npm_version() {
   if [ -z "$raw" ]; then
     echo "取得失敗"
   else
-    echo "$raw" | extract_semver
+    local parsed
+    parsed=$(echo "$raw" | extract_semver)
+    echo "${parsed:-$raw}"
   fi
 }
 
