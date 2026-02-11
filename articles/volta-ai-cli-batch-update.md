@@ -205,13 +205,11 @@ update_tool() {
   for entry in "${TOOLS[@]}"; do
     IFS='|' read -r tool_name pkg <<< "$entry"
     if [ "$tool_name" = "$name" ]; then
-      local before
-      before=$(get_version "$name")
+      local before=$(get_version "$name")
 
       log_info "${name} を更新中... (volta install ${pkg}@latest)"
       if volta install "${pkg}@latest" 2>&1; then
-        local after
-        after=$(get_version "$name")
+        local after=$(get_version "$name")
         if [ "$before" = "$after" ]; then
           log_success "${name}: ${after} (既に最新)"
         else
@@ -234,7 +232,7 @@ update_all() {
   echo ""
 
   for entry in "${TOOLS[@]}"; do
-    IFS='|' read -r name pkg <<< "$entry"
+    IFS='|' read -r name _ <<< "$entry"
     if ! update_tool "$name"; then
       failed=$((failed + 1))
     fi
@@ -273,17 +271,27 @@ main() {
   case "${1:-all}" in
     --help|-h)  show_help ;;
     --check|-c) check_versions ;;
-    copilot|gemini|claude)
-      log_header "${1} アップデート"
-      update_tool "$1"
-      echo ""
-      check_versions
-      ;;
     all)  update_all ;;
     *)
-      log_error "不明な引数: $1"
-      show_help
-      exit 1
+      # TOOLS配列からツール名を動的に判定
+      local is_tool=false
+      for entry in "${TOOLS[@]}"; do
+        if [ "${entry%%|*}" = "$1" ]; then
+          is_tool=true
+          break
+        fi
+      done
+
+      if $is_tool; then
+        log_header "${1} アップデート"
+        update_tool "$1"
+        echo ""
+        check_versions
+      else
+        log_error "不明な引数: $1"
+        show_help
+        exit 1
+      fi
       ;;
   esac
 }
@@ -350,4 +358,4 @@ TOOLS=(
 - AI CLIツールはパッケージ名がバラバラで覚えにくい
 - 3つともVoltaで管理すれば `volta install <pkg>@latest` に統一できる
 - ワンライナーなら alias 1行、細かく制御したいならスクリプト版
-- どちらも `.zshrc` に置いておけば `update-ai` 一発で最新化できる
+- alias は `.zshrc` に、スクリプト版は `~/bin` に置いて PATH を通せば `update-ai` 一発で最新化できる
