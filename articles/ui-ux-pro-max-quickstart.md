@@ -53,6 +53,14 @@ uipro init --ai windsurf    # Windsurf
 uipro init --ai antigravity # Antigravity
 uipro init --ai copilot     # GitHub Copilot
 uipro init --ai kiro        # Kiro
+uipro init --ai codebuddy   # CodeBuddy
+uipro init --ai codex       # Codex
+uipro init --ai continue    # Continue
+uipro init --ai gemini      # Gemini
+uipro init --ai opencode    # OpenCode
+uipro init --ai qoder       # Qoder
+uipro init --ai roo         # Roo Code
+uipro init --ai trae        # Trae
 uipro init --ai all         # 全アシスタント
 ```
 
@@ -78,64 +86,115 @@ uipro init --version v1.0.0 # 特定バージョンをインストール
 **複数環境を一括で使用する場合（`uipro init --ai all`）：**
 
 ```gitignore
-# UI/UX PRO MAX - 全AI環境共通
-.shared/ui-ux-pro-max/
+# UI/UX PRO MAX
 
 # Claude Code
 .claude/skills/ui-ux-pro-max/
+.claude/settings.local.json
 
 # Cursor
-.cursor/commands/ui-ux-pro-max.md
+.cursor/skills/ui-ux-pro-max/
 
 # Windsurf
-.windsurf/workflows/ui-ux-pro-max.md
+.windsurf/skills/ui-ux-pro-max/
 
 # Antigravity
-.agent/workflows/ui-ux-pro-max.md
+.agent/skills/ui-ux-pro-max/
 
-# GitHub Copilot（.github/ 全体ではなくスキルファイルのみ）
-.github/prompts/ui-ux-pro-max.prompt.md
+# GitHub Copilot（.github/ 全体ではなくスキルディレクトリのみ）
+.github/prompts/ui-ux-pro-max/
 
 # Kiro
-.kiro/steering/ui-ux-pro-max.md
+.kiro/steering/ui-ux-pro-max/
+
+# CodeBuddy
+.codebuddy/skills/ui-ux-pro-max/
+
+# Codex
+.codex/skills/ui-ux-pro-max/
+
+# Continue
+.continue/skills/ui-ux-pro-max/
+
+# Gemini
+.gemini/skills/ui-ux-pro-max/
+
+# OpenCode
+.opencode/skills/ui-ux-pro-max/
+
+# Qoder
+.qoder/skills/ui-ux-pro-max/
+
+# Roo Code
+.roo/skills/ui-ux-pro-max/
+
+# Trae
+.trae/skills/ui-ux-pro-max/
 ```
 
 :::message
-`.github/` ディレクトリ全体を ignore すると GitHub Actions やIssueテンプレートに影響します。必ずスキルファイル単位で指定してください。
+`.github/` や `.claude/` など他の用途と共有するディレクトリは、ディレクトリ全体ではなく `ui-ux-pro-max/` ディレクトリ単位で指定してください。`.github/` 全体を ignore すると GitHub Actions やIssueテンプレートに影響します。
 :::
 
 **一括セットアップの流れ：**
 
 ```bash
-# 1. 全環境に一括インストール
-uipro init --ai all
-
-# 2. .gitignore に上記パターンを追記
+# 1. .gitignore に追記（先に設定しないと git add で誤ってステージされる場合がある）
 cat >> .gitignore << 'EOF'
 
 # UI/UX PRO MAX
-.shared/ui-ux-pro-max/
 .claude/skills/ui-ux-pro-max/
-.cursor/commands/ui-ux-pro-max.md
-.windsurf/workflows/ui-ux-pro-max.md
-.agent/workflows/ui-ux-pro-max.md
-.github/prompts/ui-ux-pro-max.prompt.md
-.kiro/steering/ui-ux-pro-max.md
+.claude/settings.local.json
+.cursor/skills/ui-ux-pro-max/
+.windsurf/skills/ui-ux-pro-max/
+.agent/skills/ui-ux-pro-max/
+.github/prompts/ui-ux-pro-max/
+.kiro/steering/ui-ux-pro-max/
+.codebuddy/skills/ui-ux-pro-max/
+.codex/skills/ui-ux-pro-max/
+.continue/skills/ui-ux-pro-max/
+.gemini/skills/ui-ux-pro-max/
+.opencode/skills/ui-ux-pro-max/
+.qoder/skills/ui-ux-pro-max/
+.roo/skills/ui-ux-pro-max/
+.trae/skills/ui-ux-pro-max/
 EOF
+
+# 2. 全環境に一括インストール
+uipro init --ai all
 ```
+
+:::details 既に git add してしまった場合
+`.gitignore` を設定する前に `uipro init` を実行し、`git add` でファイルをステージしてしまった場合、ignore が効きません。以下で解除できます：
+
+```bash
+# ステージ済みの ui-ux-pro-max ファイルを追跡対象から除外（ファイル自体は削除されない）
+git rm --cached -r .github/prompts/ui-ux-pro-max/ 2>/dev/null
+git rm --cached -r .claude/skills/ui-ux-pro-max/ 2>/dev/null
+# 他にステージされたツールがあれば同様に実行
+```
+:::
 
 ### 方法2: 手動インストール
 
 GitHubリポジトリから直接ダウンロード：
 
-| AIアシスタント | コピーするフォルダ |
+| AIアシスタント | インストール先 |
 |---|---|
 | Claude Code | `.claude/skills/ui-ux-pro-max/` |
-| Cursor | `.cursor/commands/ui-ux-pro-max.md` + `.shared/ui-ux-pro-max/` |
-| Windsurf | `.windsurf/workflows/ui-ux-pro-max.md` + `.shared/ui-ux-pro-max/` |
-| Antigravity | `.agent/workflows/ui-ux-pro-max.md` + `.shared/ui-ux-pro-max/` |
-| GitHub Copilot | `.github/prompts/ui-ux-pro-max.prompt.md` + `.shared/ui-ux-pro-max/` |
-| Kiro | `.kiro/steering/ui-ux-pro-max.md` + `.shared/ui-ux-pro-max/` |
+| Cursor | `.cursor/skills/ui-ux-pro-max/` |
+| Windsurf | `.windsurf/skills/ui-ux-pro-max/` |
+| Antigravity | `.agent/skills/ui-ux-pro-max/` |
+| GitHub Copilot | `.github/prompts/ui-ux-pro-max/` |
+| Kiro | `.kiro/steering/ui-ux-pro-max/` |
+| CodeBuddy | `.codebuddy/skills/ui-ux-pro-max/` |
+| Codex | `.codex/skills/ui-ux-pro-max/` |
+| Continue | `.continue/skills/ui-ux-pro-max/` |
+| Gemini | `.gemini/skills/ui-ux-pro-max/` |
+| OpenCode | `.opencode/skills/ui-ux-pro-max/` |
+| Qoder | `.qoder/skills/ui-ux-pro-max/` |
+| Roo Code | `.roo/skills/ui-ux-pro-max/` |
+| Trae | `.trae/skills/ui-ux-pro-max/` |
 
 ## 前提条件
 
