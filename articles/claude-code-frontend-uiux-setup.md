@@ -226,8 +226,13 @@ uipro init --ai claude
 
 プロジェクトに置く場合は `.gitignore` に追加：
 ```gitignore
+# Claude Code のみ
 .claude/skills/ui-ux-pro-max/
 ```
+
+複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのパスもすべて ignore する必要があります。`uipro init --ai all` での一括セットアップと `.gitignore` の全パターンについては、以下の記事を参照してください：
+
+👉 [UI/UX PRO MAX クイックスタートガイド - .gitignore の設定](https://zenn.dev/and_and/articles/ui-ux-pro-max-quickstart#.gitignore-%E3%81%AE%E8%A8%AD%E5%AE%9A)
 :::
 
 ### 使い方
