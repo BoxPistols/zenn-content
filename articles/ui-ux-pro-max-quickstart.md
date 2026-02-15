@@ -64,6 +64,66 @@ uipro update                # 最新バージョンにアップデート
 uipro init --version v1.0.0 # 特定バージョンをインストール
 ```
 
+### `.gitignore` の設定
+
+スキルファイルはCLIで動的に生成されるため、各開発者がローカルで `uipro init` を実行する運用が推奨です。Git管理対象から除外しましょう。
+
+**Claude Code のみ使用する場合：**
+
+```gitignore
+# UI/UX PRO MAX
+.claude/skills/ui-ux-pro-max/
+```
+
+**複数環境を一括で使用する場合（`uipro init --ai all`）：**
+
+```gitignore
+# UI/UX PRO MAX - 全AI環境共通
+.shared/ui-ux-pro-max/
+
+# Claude Code
+.claude/skills/ui-ux-pro-max/
+
+# Cursor
+.cursor/commands/ui-ux-pro-max.md
+
+# Windsurf
+.windsurf/workflows/ui-ux-pro-max.md
+
+# Antigravity
+.agent/workflows/ui-ux-pro-max.md
+
+# GitHub Copilot（.github/ 全体ではなくスキルファイルのみ）
+.github/prompts/ui-ux-pro-max.prompt.md
+
+# Kiro
+.kiro/steering/ui-ux-pro-max.md
+```
+
+:::message
+`.github/` ディレクトリ全体を ignore すると GitHub Actions やIssueテンプレートに影響します。必ずスキルファイル単位で指定してください。
+:::
+
+**一括セットアップの流れ：**
+
+```bash
+# 1. 全環境に一括インストール
+uipro init --ai all
+
+# 2. .gitignore に上記パターンを追記
+cat >> .gitignore << 'EOF'
+
+# UI/UX PRO MAX
+.shared/ui-ux-pro-max/
+.claude/skills/ui-ux-pro-max/
+.cursor/commands/ui-ux-pro-max.md
+.windsurf/workflows/ui-ux-pro-max.md
+.agent/workflows/ui-ux-pro-max.md
+.github/prompts/ui-ux-pro-max.prompt.md
+.kiro/steering/ui-ux-pro-max.md
+EOF
+```
+
 ### 方法2: 手動インストール
 
 GitHubリポジトリから直接ダウンロード：
