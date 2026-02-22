@@ -12,36 +12,83 @@ published: true
 
 さらに最近は AI 駆動の開発が当たり前になり、AI エージェントが勝手にサーバーを立てて動作確認するケースも増えました。こうなると、もはや localhost の状態を人間が把握するのは困難です。
 
-**[Portless](https://github.com/vercel-labs/portless)** は、Vercel Labs が開発したツールで、ポート番号の代わりに**名前付きの `.localhost` URL** でアプリにアクセスできるようにしてくれます。一意の名前が付くことで、何がどこで動いているかが一目でクリアになります。
+**Portless** はこの問題を、名前付きの `.localhost` URL で解決してくれるツールです。
+
+:::message
+**公式リポジトリ**: https://github.com/vercel-labs/portless
+:::
+
+## Portless とは
+
+Vercel Labs が開発した、ローカル開発サーバーのポート番号を**名前付き URL** に置き換えるツールです。
+
+公式 README の概要を日本語でまとめると:
+
+- **ポート番号の代わりに名前でアクセス** - `localhost:3000` → `my-app.localhost:1355`
+- **ポート衝突を自動回避** - 空きポートを自動割り当てするため `EADDRINUSE` が起きない
+- **HTTP/2 + HTTPS 対応** - `--https` フラグで SSL 証明書を自動生成・信頼ストアに登録
+- **sudo 不要** - デフォルトのポート 1355 なら管理者権限なしで動作
+- **モノレポ対応** - サービスごとにサブドメインを割り当てられる
+- **設定ファイル変更不要** - 環境変数 `PORT` 経由で動くため git 差分が出ない
 
 ```
-# Before
-http://localhost:3000
-http://localhost:3001
-http://localhost:5173
+# Before: ポート番号で管理
+http://localhost:3000    ← どのアプリ？
+http://localhost:3001    ← どのアプリ？
+http://localhost:5173    ← どのアプリ？
 
-# After
+# After: 名前で管理
 http://my-app.localhost:1355
 http://api-server.localhost:1355
 http://docs-site.localhost:1355
 ```
 
-実際に使ってみたところ非常に快適だったので、紹介します。
+### 動作要件
 
-## TL;DR - 3ステップで使える
+- Node.js 20 以上
+- macOS または Linux
+
+## 導入 - 3ステップで使える
+
+### 1. グローバルインストール（一度だけでOK）
 
 ```bash
-# 1. グローバルインストール（一度だけでOK）
 npm install -g portless
+```
 
-# 2. プロキシを起動（初回のみ sudo でパスワードを求められる場合あり）
+### 2. プロキシの起動
+
+```bash
 portless proxy start
+```
 
-# 3. いつものコマンドの前に portless <名前> を付けるだけ
+:::message
+初回のみ SSL 証明書の設定のためにパスワードを求められることがありますが、それ以降は不要です。
+:::
+
+### 3. アプリを起動する
+
+いつもの起動コマンドの前に `portless <好きな名前>` を付けるだけです。
+
+```bash
 portless my-app npm run dev
 ```
 
 これだけで `http://my-app.localhost:1355` でアクセスできます。
+
+### git 差分を出さずに使う
+
+上記のようにターミナルで直接 `portless` を頭に付ける方法なら、`package.json` を一切書き換えないため **git 差分が発生しません**。
+
+チームで共有したい場合は `package.json` に組み込むこともできます。
+
+```json
+{
+  "scripts": {
+    "dev": "portless my-app next dev"
+  }
+}
+```
 
 ## なぜポート番号が問題なのか
 
@@ -57,13 +104,11 @@ portless my-app npm run dev
 
 特に AI 駆動開発では、AI エージェントがビルド確認やプレビューのためにサーバーを起動することが日常的です。人間が立てたサーバーに加えて AI が立てたサーバーも混在し、localhost の状態がカオスになります。
 
-Portless は名前ベースのルーティングでこれらの問題を一括解決します。`portless list` を叩けば、今何が動いているか一発で分かります。
+Portless なら名前付き URL で一意に識別できるので、`portless list` を叩けば今何が動いているか一発で分かります。
 
 ## Portless の仕組み
 
-Portless が行っていることはシンプルです。
-
-```
+```bash
 portless my-app npm run dev
 ```
 
@@ -84,10 +129,6 @@ Portless プロキシ (:1355)
   ▼
 Next.js dev server (:4191)
 ```
-
-### git 差分が出ない
-
-ポイントは、プロジェクト側の設定ファイルを**一切変更しない**ことです。`package.json` やフレームワークの設定を書き換える必要がないため、git 差分が発生しません。
 
 ポート番号は環境変数 `PORT` 経由で渡されるだけなので、Next.js や Vite など `PORT` 環境変数に対応しているフレームワークならそのまま動きます。
 
@@ -130,18 +171,6 @@ portless list
 
 現在動いているアプリとそのルーティングを一覧表示できます。
 
-### package.json に組み込む場合
-
-チームで共有したい場合は `package.json` に書くこともできます。
-
-```json
-{
-  "scripts": {
-    "dev": "portless my-app next dev"
-  }
-}
-```
-
 ### 環境変数での設定
 
 | 環境変数 | 説明 |
@@ -151,11 +180,6 @@ portless list
 | `PORTLESS_STATE_DIR` | 状態ディレクトリのパスを変更 |
 | `PORTLESS=0` | 一時的に Portless をバイパス |
 
-## 動作要件
-
-- Node.js 20 以上
-- macOS または Linux
-
 ## まとめ
 
 Portless は「ポート番号を意識しなくていい開発体験」を提供してくれるツールです。
@@ -164,7 +188,8 @@ Portless は「ポート番号を意識しなくていい開発体験」を提�
 - **設定ファイル不要** - git 差分が出ない
 - **名前でアクセス** - どのアプリがどこで動いているか一目瞭然
 - **衝突しない** - ポート番号の奪い合いが起きない
+- **AI 駆動開発と相性が良い** - AI が立てたサーバーも名前で把握できる
 
-複数プロジェクトを同時に開発している人には特におすすめです。
+複数プロジェクトを同時に開発している人、AI エージェントを活用している人には特におすすめです。
 
 https://github.com/vercel-labs/portless
