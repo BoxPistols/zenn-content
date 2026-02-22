@@ -130,7 +130,51 @@ Portlessプロキシ (:1355)
 Next.js dev server (:4191)
 ```
 
-ポート番号は環境変数`PORT`経由で渡されるだけなので、Next.jsやViteなど`PORT`環境変数に対応しているフレームワークならそのまま動きます。
+ポート番号は環境変数`PORT`経由で渡されるだけなので、`PORT`環境変数に対応しているフレームワークならそのまま動きます。
+
+### フレームワークごとの注意点
+
+Next.jsは`PORT`環境変数をデフォルトで読むのでそのまま動きますが、**Viteは`PORT`を読みません**。PortlessがセットしたポートとViteが実際に使うポートがずれて、プロキシが正しく転送できなくなります。
+
+```
+# Portlessが PORT=4247 をセットして起動
+# しかしViteは無視して5173から空きポートを探す
+
+Portless → localhost:4247 に転送しようとする
+Vite     → localhost:5175 で実際に起動している
+→ ずれてアクセスできない
+```
+
+#### 個人利用(git差分なし): CLIで`--port`を渡す
+
+`vite.config.ts`を変更せず、シェル経由で`PORT`環境変数を`--port`に渡します。
+
+```bash
+portless my-app sh -c 'vite --port $PORT'
+
+# nr経由の場合
+portless my-app sh -c 'nr dev -- --port $PORT'
+```
+
+#### チーム利用: `vite.config.ts`に設定を入れる
+
+チーム全員でPortlessを使う場合は、`vite.config.ts`に設定を入れるのが確実です。
+
+```ts
+export default defineConfig({
+  server: {
+    port: Number(process.env.PORT) || 5173,
+  },
+})
+```
+
+#### フレームワーク対応表
+
+| フレームワーク | `PORT`環境変数 | 追加設定 |
+|---------------|---------------|---------|
+| Next.js | 対応済み | 不要 |
+| Vite | 非対応 | CLI`--port`渡しまたは`vite.config.ts`で設定 |
+| Create React App | 対応済み | 不要 |
 
 ## 便利な使い方
 
