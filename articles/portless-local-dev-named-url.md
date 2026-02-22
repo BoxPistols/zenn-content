@@ -176,6 +176,28 @@ export default defineConfig({
 | Vite | 非対応 | CLI`--port`渡しまたは`vite.config.ts`で設定 |
 | Create React App | 対応済み | 不要 |
 
+#### Turborepoやカスタムスクリプト経由の場合
+
+`package.json`の`dev`スクリプトがシェルスクリプトやTurborepo経由で起動する構成の場合、Portlessがセットした`PORT`環境変数が最終的なdev serverまで届かず、Bad Gatewayになることがあります。
+
+```bash
+# 例: dev スクリプトがシェルスクリプト経由
+"dev": "sh shells/dev.sh"  # → pnpm turbo dev → next dev
+# PORTが途中で失われる
+```
+
+Portlessは`next dev`や`vite`を**直接起動**するシンプルな構成と相性が良いです。
+
+```bash
+# 相性が良い
+portless my-app next dev
+portless my-app nr dev        # nr → next dev に直結する場合
+
+# PORTが届かない可能性がある
+portless my-app sh shells/dev.sh   # スクリプト経由
+portless my-app pnpm turbo dev     # Turborepo経由
+```
+
 ## 便利な使い方
 
 ### HTTPS対応
