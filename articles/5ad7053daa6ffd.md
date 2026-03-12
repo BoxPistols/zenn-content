@@ -36,7 +36,7 @@ IT業界でかつて当たり前に使われていた用語の中に、差別的
 | master record / master data | reference record, golden record | データ管理の文脈 |
 
 :::message
-MySQLは8.0.26（2021年）で`SHOW REPLICA STATUS`等に変更済み。PostgreSQLも16（2023年）で`primary`/`standby`を正式採用しています。古いドキュメントやスクリプトに残っている場合は更新を推奨します。
+MySQLは8.0.26（2021年）で`SHOW REPLICA STATUS`等に変更済み。PostgreSQLもドキュメント上で従来から`primary`/`standby`を使用しており、14（2021年）前後で`slave`の残存箇所が除去されています。古いドキュメントやスクリプトに残っている場合は更新を推奨します。
 :::
 
 ### 人種差別に由来する用語
@@ -62,7 +62,7 @@ MySQLは8.0.26（2021年）で`SHOW REPLICA STATUS`等に変更済み。PostgreS
 
 | 非推奨用語 | 代替用語 | 補足 |
 |---|---|---|
-| man-in-the-middle（MITM） | on-path attack, machine-in-the-middle | IETF、Google推奨 |
+| man-in-the-middle（MITM） | on-path attack, person-in-the-middle（PITM） | IETF、Google推奨 |
 | man-hours | person-hours, work-hours | 工数見積もりの文脈 |
 | manpower | workforce, staff | 人員の文脈 |
 | mankind | humanity, people | ドキュメント全般 |
@@ -81,7 +81,7 @@ MySQLは8.0.26（2021年）で`SHOW REPLICA STATUS`等に変更済み。PostgreS
 
 | 非推奨用語 | 代替用語 | 補足 |
 |---|---|---|
-| sanity check | confidence check, quick check | Google、Android、IETF推奨 |
+| sanity check | confidence check, quick check | Google、Android推奨（INI Tier 2） |
 | dummy（変数・データ） | placeholder, test, mock | Android推奨 |
 | cripple | degrade, limit | 機能制限の文脈 |
 | crazy / insane | unexpected, remarkable | 形容詞としての使用 |
@@ -105,7 +105,7 @@ Microsoftが特に積極的に見直しを推奨しているカテゴリです�
 | blast radius | impact, affected scope | 軍事由来。Inclusive Naming InitiativeのTier 3 |
 | demilitarized zone（DMZ） | perimeter network | Microsoft推奨 |
 | war room | situation room, operations center | インシデント対応の文脈 |
-| STONITH | fence | Google推奨。クラスター管理 |
+| STONITH | fence等（文脈に応じた具体的表現を推奨） | Google推奨。クラスター管理 |
 | locked down | secured | Microsoft推奨 |
 
 ### 文化・社会的背景に関する用語
@@ -118,7 +118,7 @@ Microsoftが特に積極的に見直しを推奨しているカテゴリです�
 | segregate | separate, segment | 人種隔離政策（segregation）を想起 |
 | evangelist | advocate, ambassador | 宗教的偏りの懸念（Tier 3） |
 | native feature | built-in feature | 文脈によっては先住民差別と捉えられる |
-| dark pattern | deceptive pattern | deceptive.design公式変更（2021年） |
+| dark pattern | deceptive pattern | deceptive.design公式変更 |
 | illegal（値・文字） | invalid, not valid | 移民・犯罪との連想を回避 |
 | end-of-life | end of support | INI Tier 3 |
 
@@ -126,7 +126,7 @@ Microsoftが特に積極的に見直しを推奨しているカテゴリです�
 
 | 非推奨用語 | 代替用語 | 補足 |
 |---|---|---|
-| hallucination（AI） | confabulation, factual error, inaccuracy | 精神疾患のスティグマ＋開発者責任の回避を助長（Tier 3） |
+| hallucination（AI） | factual error, inaccuracy, incorrect assertion | 精神疾患のスティグマ＋開発者責任の回避を助長（INI Tier 3） |
 
 ### 日本語特有の差別表現
 
@@ -152,11 +152,11 @@ IT文脈で使われることがある日本語の差別表現です。放送禁
 | Jenkins | 2016/2020 | slave / master | agent / controller |
 | Redis 5.0 | 2018 | SLAVEOF | REPLICAOF |
 | MySQL 8.0.26 | 2021 | SHOW SLAVE STATUS等 | SHOW REPLICA STATUS等 |
-| PostgreSQL 16 | 2023 | master / slave | primary / standby |
+| PostgreSQL | 〜2021 | master / slave | primary / standby |
 | Kubernetes 1.20 | 2020 | master | control plane |
-| Django 2.1 | 2018 | master / slave | default / replica |
-| Python 3.12 | 2023 | master_open（pty） | parent_open |
-| Firefox 88 | 2021 | Master Password | Primary Password |
+| Django 1.7 | 2014 | master / slave | primary / replica |
+| Python 3.12 | 2023 | master_open / slave_open（pty） | openpty()に統合（3.14で削除） |
+| Firefox 80 | 2020 | Master Password | Primary Password |
 | Chrome / Chromium | 2020 | blacklist | blocklist |
 | AWS | 2020 | master account | management account |
 | GCP（GKE） | 2020 | master | control plane |
@@ -208,26 +208,44 @@ npm install --save-dev eslint-plugin-inclusive-language
 ```
 
 ```js
-// eslint.config.js
-import inclusiveLanguage from "eslint-plugin-inclusive-language";
-
-export default [
-  {
-    plugins: { "inclusive-language": inclusiveLanguage },
-    rules: {
-      "inclusive-language/use-inclusive-words": "warn",
-    },
+// .eslintrc.js
+module.exports = {
+  plugins: ["inclusive-language"],
+  rules: {
+    "inclusive-language/use-inclusive-words": "warn",
   },
-];
+};
 ```
+
+:::message
+このプラグインは2023年9月以降メンテナンスが停滞しています。導入前にプロジェクトのESLintバージョンとの互換性を確認してください。
+:::
 
 ## 参考資料
 
+### ガイドライン・標準
+
 - [Inclusive Naming Initiative - Word Lists](https://inclusivenaming.org/word-lists/overview/)
-- [Google Developer Documentation Style Guide](https://developers.google.com/style/inclusive-documentation)
+- [Google Developer Documentation Style Guide - Inclusive Documentation](https://developers.google.com/style/inclusive-documentation)
+- [Google Developer Documentation Style Guide - Word List](https://developers.google.com/style/word-list)
 - [Android - Respectful Code](https://source.android.com/docs/setup/contribute/respectful-code)
 - [Microsoft - Bias-Free Communication](https://learn.microsoft.com/en-us/style-guide/bias-free-communication)
+- [Microsoft - Militaristic Language](https://learn.microsoft.com/en-us/style-guide/militaristic-language)
 - [IETF - Terminology, Power, and Exclusionary Language](https://datatracker.ietf.org/doc/draft-knodel-terminology/)
+
+### フレームワーク/ツール別の公式出典
+
+- [GitHub - デフォルトブランチをmainに変更（2020年）](https://github.blog/changelog/2020-10-01-the-default-branch-for-newly-created-repositories-is-now-main/)
+- [Jenkins - Terminology Update（2020年）](https://www.jenkins.io/blog/2020/06/18/terminology-update/)
+- [Redis - REPLICAOF コマンド（5.0〜）](https://redis.io/docs/latest/commands/replicaof/)
+- [MySQL 8.0.26 リリースノート（2021年）](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-26.html)
+- [Kubernetes KEP-2067 - master→control plane](https://github.com/kubernetes/enhancements/issues/2067)
+- [Django Ticket #22667 - master/slave → primary/replica（2014年）](https://code.djangoproject.com/ticket/22667)
+- [Python 3.12 - pty module非推奨化](https://docs.python.org/3/whatsnew/3.12.html)
+- [Firefox - Master Password → Primary Password（Bug 1644807）](https://bugzilla.mozilla.org/show_bug.cgi?id=1644807)
+- [Chromium - Inclusive Code（Bug 842296）](https://bugs.chromium.org/p/chromium/issues/detail?id=842296)
+- [AWS Organizations - management accountへの名称変更（2020年）](https://docs.aws.amazon.com/organizations/latest/userguide/document-history.html)
+- [deceptive.design - About Us](https://www.deceptive.design/about-us)
 
 ## まとめ
 
