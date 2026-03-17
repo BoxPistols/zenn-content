@@ -1,14 +1,14 @@
 ---
-title: "無料のフロントエンド実践教材「Dev Album」を公開した"
+title: "Web 開発の実践リファレンス「Dev Album」を公開した"
 emoji: "📘"
 type: "idea"
-topics: ["react", "nextjs", "threejs", "frontend"]
+topics: ["react", "nextjs", "frontend", "アクセシビリティ"]
 published: false
 ---
 
 ## 概要
 
-**Dev Album** は、React・Git・Three.js・Claude Code の 4 領域をカバーする Web ベースの学習教材である。
+**Dev Album** は、Git・React・Claude Code・Three.js の 4 領域を、Web 標準とアクセシビリティの観点を含めて解説する技術マニュアルである。
 
 https://dev-album.vercel.app
 
@@ -18,30 +18,28 @@ https://dev-album.vercel.app
 
 ---
 
-## 背景と動機
+## 背景
 
-既存のフロントエンド教材には以下の課題がある。
+W3Schools の構成を参考に、以下の方針で構築した。
 
-- **領域の分断**: 「React 入門」「Git 入門」は個別に存在するが、横断的に結びつける教材が少ない
-- **デザイナー向け導線の不足**: Storybook や アクセシビリティを、デザイナーの視点から解説する教材がほぼない
-- **静的なコード表示**: コードを読むだけで、実行結果を即座に確認できる仕組みがない
-
-Dev Album はこれらの課題に対して、4 領域の統合・視覚的なライブプレビュー・デザイナー参加型のコンテンツ設計で対応する。
+- **Web 標準の観点を含める**: セマンティック HTML、ARIA、WCAG 準拠など、コードの書き方と同時に品質面も扱う
+- **領域を横断する**: Git の環境構築から React のコンポーネント設計、デプロイ、チーム開発までの流れを一本で辿れる構成にした
+- **コードを書いて確認できる**: 静的なコード表示ではなく、ライブプレビュー付きのエディタで実行結果を即座に確認できる
 
 ---
 
 ## 収録内容
 
-### Git / GitHub 入門
+### Git / GitHub
 
-Git の基本操作、ブランチ戦略、GitHub PR 運用、AI エージェント連携を扱う。ターミナル操作未経験者を想定し、環境構築から解説している。
+Git の基本操作、ブランチ戦略、GitHub PR 運用、AI エージェント連携を扱う。環境構築から解説している。
 
-### React / TypeScript / Next.js 入門
+### React / TypeScript / Next.js
 
 最も大きなセクション。以下のトピックを含む。
 
-- React 19 + TypeScript の基礎から応用
-- Next.js 15 App Router / Server Components / PPR
+- React 19 + TypeScript
+- Next.js 15 App Router / Server Components
 - CSS Modules / Tailwind / MUI / styled-components
 - Storybook（Figma 連携・Chromatic）
 - Flexbox / CSS Grid
@@ -49,17 +47,17 @@ Git の基本操作、ブランチ戦略、GitHub PR 運用、AI エージェン
 - セマンティック HTML・ARIA・Table 設計
 - ダークパターン回避と技術倫理
 
-### Three.js / React Three Fiber 入門
+### Claude Code & 開発環境
 
-シーン構築、マテリアル、ライティング、アニメーション、React Three Fiber + drei、飛行シミュレーション開発を扱う。
+Claude Code CLI、MCP サーバー、Agent Teams、tmux、Hooks、CI/CD を扱う。
 
-### Claude Code & tmux ガイド
+### Three.js / React Three Fiber
 
-Claude Code CLI、MCP サーバー、tmux マルチセッション管理、Hooks、GitHub Actions、ヘッドレスモードを扱う。
+シーン構築、マテリアル、ライティング、アニメーション、R3F + drei、飛行シミュレーション開発を扱う。
 
 ---
 
-## 学習機能
+## 主な機能
 
 ### ライブコードエディタ
 
@@ -67,7 +65,7 @@ Claude Code CLI、MCP サーバー、tmux マルチセッション管理、Hooks
 
 ![コードエディタとプレビューの左右分割](スクショURL_2)
 
-エディタは prism-react-renderer によるシンタックスハイライト付き。
+シンタックスハイライト付き。Tab / Shift+Tab でインデント操作に対応。
 
 ### 3D プレビュー
 
@@ -81,34 +79,37 @@ Three.js セクションでも同様の左右分割レイアウトを採用。�
 
 ![コーディングチャレンジ](スクショURL_4)
 
-### クイズ・FAQ
+### UI トレーニング
 
-選択式クイズと FAQ を各ステップに配置し、知識の確認とつまずきポイントの解消に対応している。
+Flexbox の中央寄せからレスポンシブナビゲーションまで、40 問の HTML/CSS/JS チャレンジを 4 レベルで収録。
 
 ---
 
-## デザイナー向けコンテンツ
+## Web 標準・アクセシビリティ関連
 
-### Storybook セクション
-
-Figma ユーザーのメンタルモデルを起点に、以下をライブプレビュー付きで解説している。
-
-![Storybook Controls 体験](スクショURL_5)
-
-- Figma コンポーネント → Storybook Story の対応関係
-- Controls パネルによるコードなしの Props 操作
-- デザイントークン → CSS 変数 → コンポーネントの対応表
-- Chromatic による Visual Regression テスト
+プログラミングの解説に加え、以下のトピックを独立したセクションで扱っている。
 
 ### アクセシビリティ実践
 
-- **セマンティック HTML と ARIA** — ランドマーク要素、aria 属性、フォーカス管理、スクリーンリーダーテスト
-- **Table 設計** — ellipsis の多用を避けるべき理由、横スクロールの判断基準、入れ子テーブルの代替案
-- **Form のアクセシビリティ** — placeholder 依存の問題、エラーメッセージの aria 紐付け、カスタム select の実装課題
+- セマンティック HTML と ARIA（ランドマーク要素、aria 属性、フォーカス管理）
+- Table 設計の全課題（ellipsis の問題、横スクロール判断、入れ子テーブルの代替案）
+- Form のアクセシビリティ（placeholder 依存の問題、エラーの aria 紐付け）
+
+### UI コンポーネント設計
+
+- Dialog の多用を避ける理由（フォーカストラップの複雑さ、認知負荷）
+- Snackbar / Toast の配置・タイミング設計
+- Form グループの HTML 構造と課題
 
 ### ダークパターン回避と技術倫理
 
-代表的なダークパターンを視覚的な NG/OK 比較で解説している。Cookie バナー設計、Confirmshaming、WCAG 2.2 準拠、障害者差別解消法との関連を扱う。
+代表的なダークパターンを NG/OK 比較で解説。Cookie バナー設計、WCAG 2.2、障害者差別解消法との関連を扱う。
+
+### Storybook と Figma 連携
+
+Figma のコンポーネントと Storybook Story の対応関係、Controls パネル、デザイントークン、Visual Regression テストを扱う。
+
+![Storybook Controls](スクショURL_5)
 
 ---
 
@@ -116,7 +117,7 @@ Figma ユーザーのメンタルモデルを起点に、以下をライブプ�
 
 | 技術 | 用途 |
 |------|------|
-| React 19 + TypeScript | UI フレームワーク |
+| React 19 + TypeScript | UI |
 | Vite | ビルド + HMR |
 | Tailwind CSS | スタイリング |
 | Sucrase | ブラウザ内 JSX トランスパイル |
@@ -125,13 +126,13 @@ Figma ユーザーのメンタルモデルを起点に、以下をライブプ�
 | wouter | ルーティング |
 | Vercel | ホスティング |
 
-プレビューは `srcDoc` iframe + `sandbox="allow-scripts allow-same-origin"` で分離している。CDN は React 18.3.1 UMD、Three.js 0.160.1 UMD を使用（React 19・Three.js 0.161+ は UMD ビルドを廃止しているため）。
+プレビューは `srcDoc` iframe + `sandbox="allow-scripts allow-same-origin"` で分離。CDN は React 18.3.1 UMD、Three.js 0.160.1 UMD を使用（React 19・Three.js 0.161+ は UMD ビルドを廃止しているため）。
 
 ---
 
 ## リンク
 
-- 教材: https://dev-album.vercel.app
+- サイト: https://dev-album.vercel.app
 - ソースコード: https://github.com/BoxPistols/unified-manual
 - バグ報告: https://dev-album.vercel.app/bug-report
 
