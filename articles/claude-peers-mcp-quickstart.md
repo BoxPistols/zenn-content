@@ -157,6 +157,15 @@ Send a message to peer [id]: "what are you working on?"
 
 環境変数`OPENAI_API_KEY`を設定すると、各インスタンスが起動時にOpenAI APIで作業内容の要約を自動生成します（コストはごくわずか）。要約はディレクトリ、Gitブランチ、最近のファイルをもとに作成され、他のインスタンスが`list_peers`で参照できます。
 
+設定方法はシェルのプロファイルに追記するのが簡単です：
+
+```bash
+# ~/.zshrc or ~/.bashrc に追記
+export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+追記後、`source ~/.zshrc`を実行するか、新しいターミナルを開いてからClaude Codeを起動してください。
+
 使用モデルは`gpt-5.4-nano`がソースコードにハードコードされており、環境変数等で変更することはできません。
 
 APIキーがない場合は、Claudeが`set_summary`ツールで自分のサマリーを設定するため、この機能は必須ではありません。
