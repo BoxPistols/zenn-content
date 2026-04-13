@@ -277,7 +277,11 @@ cat >> ~/.claude/CLAUDE.md  # 途中で死ぬとファイルが半端な状態
 
 ### 4. multi-session の競合
 
-Claude Code を 2 つ同時起動した場合、両方の `UserPromptSubmit` hook が並列に `git pull` → `CLAUDE.md` 上書きを行います。`mv` 自体はアトミックですが、「先に書いた方が即上書きされる」可能性があります。実害は通常 1 セッション分の出遅れ程度ですが、`Stop` hook の同時 commit で `.git/index.lock` 競合は起き得ます。実装は `set -euo pipefail` + リトライなしなので、lock 衝突したセッションの commit はその回はスキップされ、次回の `Stop` hook 発火時に拾い直される挙動になります。
+Claude Code を 2 つ同時起動した場合、両方の `UserPromptSubmit` hook が並列に `git pull` → `CLAUDE.md` 上書きを行います。`mv` 自体はアトミックですが、「先に書いた方が即上書きされる」可能性があります。実害は通常 1 セッション分の出遅れ程度です。
+
+ただし `Stop` hook の同時 commit で `.git/index.lock` 競合は起き得ます。実装は `set -euo pipefail` + リトライなしなので、lock 衝突したセッションの commit はその回はスキップされます。
+
+スキップされた変更は次回の `Stop` hook 発火時に拾い直される挙動なので、最終的には記録されますが、並列 session 起動時の commit は少し遅延する前提で運用してください。
 
 ### 5. `git pull` / auto push の失敗はどちらも silent
 
@@ -332,7 +336,7 @@ LLM 記憶の有力 OSS として [mem0](https://github.com/mem0ai/mem0) と [Le
 | ライセンス | MIT | Apache 2.0 |
 | Claude Code 固有機能との統合 | 公式 hook + CLAUDE.md に乗る | アプリ側で独自実装必要 |
 
-差別化は**「Claude Code 専用に最適化され、既存ワークフロー (CLAUDE.md + git) にそのまま乗る」**こと。Claude の context window が 1M トークンまで拡張された現状では、数 KB 程度の全文注入は実務上問題にならず、検索レイヤ不在というシンプルさが逆に強みになります。
+差別化は**「Claude Code 専用に最適化され、既存ワークフロー (CLAUDE.md + git) にそのまま乗る」**こと。Claude の context window が 1M トークン級まで拡張できる現状では、数 KB 程度の全文注入は実務上問題にならず、検索レイヤ不在というシンプルさが逆に強みになります (1M は tier / beta 扱いの条件付き機能なので、運用環境で利用できるかは別途確認してください)。
 
 逆に言えば、以下のいずれかが当てはまるなら本ツールではなく mem0 / Letta を選ぶのが適切です:
 
