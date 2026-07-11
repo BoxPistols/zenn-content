@@ -112,7 +112,7 @@ Claude Code には [hook](https://docs.claude.com/ja/docs/claude-code/hooks) と
 
 1. working tree に変更がなければ即 exit
 2. シークレットスキャナを **working mode** で実行 (`sk-*` / `ghp_*` / `AKIA*` / JWT / PEM 等の典型パターン)
-3. `.md` ファイルのみを stage (`git add -- ':(glob)**.md'`)
+3. `.md` ファイルのみを stage (`git add -A -- '*.md'`)
 4. stage 後の差分が空 (`.md` 以外の変更のみ) ならスキップ
 5. `git commit` (auto push は **デフォルト off**)
 
@@ -125,7 +125,7 @@ Claude Code には [hook](https://docs.claude.com/ja/docs/claude-code/hooks) と
 | 1 | `sanitize_memory()` のマーカー行除去 | `<!-- claude-memory-sync:begin/end -->` の偽装注入を防ぐ |
 | 2 | `project_key()` のパストラバーサル対策 | 連続ドット・スラッシュ・先頭ドットを除去し `repos/` の外に書けなくする |
 | 3 | `.gitignore` の whitelist | `.md` 以外を新規追加でも tracking されない |
-| 4 | `git add -- ':(glob)**.md'` | 既 tracking でも `.md` 以外は stage されない |
+| 4 | `git add -A -- '*.md'` | 既 tracking でも `.md` 以外は stage されない |
 | 5 | `scan-secrets.sh` の 20+ パターン | 典型的な token / key / PEM を commit/push 前に検出 |
 | 6 | auto-push デフォルト off | リモート飛ぶ前に人間が `cm sync` で必ず 1 回レビュー |
 
@@ -142,9 +142,9 @@ Claude が誤って API キーを記憶ファイルに書き込んだ瞬間に G
 ### シークレット漏洩の二重防御
 
 - **`.gitignore` で `.md` 以外を全除外** (whitelist 方式)
-- **`git add -- ':(glob)**.md'` で `.md` ファイルだけ stage**
+- **`git add -A -- '*.md'` で `.md` ファイルだけ stage**
 
-`.gitignore` は新規ファイルにしか効かず、tracking 済みのファイルには無力。glob filter で `.md` 以外を最終防衛するのが二層目です。
+`.gitignore` は新規ファイルにしか効かず、tracking 済みのファイルには無力。pathspec filter で `.md` 以外を最終防衛するのが二層目です (当初は `:(glob)**.md` でしたが、untracked ディレクトリ配下の新規 `.md` を拾えないバグがあり `-A -- '*.md'` に修正済み)。
 
 ### シークレットスキャナ
 
@@ -460,7 +460,7 @@ cm status
   a1b2c3d manual: 2026-04-13 23:45
 ```
 
-なお、Claude Code セッション中に Claude が `repos/*.md` を更新した場合は、セッション終了時の `Stop` hook が自動 commit します (push はされません)。日常的には `cm` を手動実行して push するリズムになります。
+なお、Claude Code セッション中に Claude が `repos/*.md` を更新した場合は、応答完了ごとに発火する `Stop` hook が自動 commit します (push はされません)。日常的には `cm` を手動実行して push するリズムになります。
 
 ### Step 4. 動作確認
 
@@ -487,7 +487,7 @@ claude                 # いつも通り起動。記憶が自動注入される
 あなた: 今日学んだことを記憶して
 Claude: ~/.claude-memory/repos/{project-key}.md に追記しました
 
-# セッション終了時
+# 応答が完了するたび (Stop hook)
 → 自動 commit (push はされない)
 
 # 区切りで、または別 PC と同期したい時
@@ -509,7 +509,7 @@ cm                     # pull → scan → commit → push
 | 変数 | 説明 | デフォルト |
 |---|---|---|
 | `CLAUDE_MEMORY_DIR` | 記憶リポジトリのパス | `~/.claude-memory` |
-| `CLAUDE_MEMORY_AUTO_PUSH` | session 終了時の自動 push (`1`/`true` で有効) | off |
+| `CLAUDE_MEMORY_AUTO_PUSH` | Stop hook (応答完了ごと) の自動 push (`1`/`true` で有効) | off |
 | `CLAUDE_MEMORY_SKIP_SECRET_SCAN` | シークレットスキャナをバイパス | off |
 | `CLAUDE_MEMORY_SYNC_REPO` | install 元 repo (fork 用) | 公式 |
 | `CLAUDE_MEMORY_ALLOW_CUSTOM_REPO` | カスタム repo install を許可 | 拒否 |
