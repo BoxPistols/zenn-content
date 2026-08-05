@@ -20,7 +20,7 @@ Google Labs が 2026-04-21 に公開した **DESIGN.md** を、実際に導入�
 検証に使った資料とコードは公開しています。
 
 - 解説: https://github.com/BoxPistols/design-md-docs
-- 実験環境: https://github.com/BoxPistols/design-md-sandbox
+- 実験環境と再現手順: https://github.com/BoxPistols/design-md-docs/blob/main/docs/07-machine-verification.md
 
 :::message
 検証時点: フォーマット `alpha` / CLI `@google/design.md@0.4.0` / 2026年8月。
@@ -604,7 +604,7 @@ DESIGN.md の `components:` と、実際の story を突き合わせて「定義
 ### 資料
 
 - 解説とテンプレート: https://github.com/BoxPistols/design-md-docs
-- 実験環境（再現可能）: https://github.com/BoxPistols/design-md-sandbox
+- 実験の詳細と再現手順: https://github.com/BoxPistols/design-md-docs/blob/main/docs/07-machine-verification.md
 - 本家: https://github.com/google-labs-code/design.md
 - Google 公式アナウンス: https://blog.google/innovation-and-ai/models-and-research/google-labs/stitch-design-md/
 - Google Stitch: https://stitch.withgoogle.com/
