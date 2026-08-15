@@ -14,11 +14,18 @@ Storybook は UI カタログとして優秀ですが、「このコンポーネ
 
 実装は筆者が運用中のデザインシステムで稼働しているもので、記事中のコードと数値はすべて実コードから起こしています。
 
-動くリファレンス実装を OSS で公開しました。記事のコードはここから読めます。
+動くリファレンス実装を OSS で公開しました。まず触ってから読むこともできます。
+
+https://storybook-concierge.vercel.app
+
+**API キーは要りません。** 右下のボタンからチャットを開き、「この画面なに？」と聞くと、いま開いている Story を前提に答えます。
+
+![ページ文脈の回答](/images/storybook-ai-chat-integration/02-page-context.png)
+*Components/Alert を開いた状態で「この画面なに？」と聞いた実際の応答。severity の使い分けと参考リンクまで、AI を呼ばずに返している*
+
+コードはこちらです。
 
 https://github.com/BoxPistols/storybook-concierge
-
-`pnpm install && pnpm storybook` で動きます。**API キーが無くても FAQ ベースで動く**ので、まず触ってから読むこともできます。
 
 :::message
 検証環境: Storybook 10.5 / React 18 / TypeScript strict / AI SDK v6 (`ai` + `@ai-sdk/openai` + `@ai-sdk/google`)。
@@ -1036,6 +1043,9 @@ Controls パネルで variant / color / size を変更して、見た目の変�
 …
 このページで触れる props: variant, color, size, disabled, children
 ```
+
+![Docs ページ](/images/storybook-ai-chat-integration/01-docs.png)
+*dark が既定。ツールバーの Theme で light に切り替えられる*
 
 深い回答が要るページだけ、Storybook から下書きを生成して足していく形にできます。
 
