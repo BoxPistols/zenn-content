@@ -14,6 +14,12 @@ Storybook は UI カタログとして優秀ですが、「このコンポーネ
 
 実装は筆者が運用中のデザインシステムで稼働しているもので、記事中のコードと数値はすべて実コードから起こしています。
 
+動くリファレンス実装を OSS で公開しました。記事のコードはここから読めます。
+
+https://github.com/BoxPistols/storybook-concierge
+
+`pnpm install && pnpm storybook` で動きます。**API キーが無くても FAQ ベースで動く**ので、まず触ってから読むこともできます。
+
 :::message
 検証環境: Storybook 10.5 / React 18 / TypeScript strict / AI SDK v6 (`ai` + `@ai-sdk/openai` + `@ai-sdk/google`)。
 確認したのはこの構成だけです。Decorator の書き方自体は以前の Storybook でも大きくは変わらないはずですが、筆者は検証していません。
@@ -1014,4 +1020,34 @@ MCP サーバーの実装には `tmcp` と `valibot` が使われています。
 
 文脈を渡す部分は Storybook 固有ではありません。ドキュメントビューアでも管理画面でも、「いまユーザーが見ているものは何か」を構造化して渡せる場所があれば、同じ設計がそのまま使えます。
 
-なお現状の実装は、プロジェクト固有の知識ベース（MUI リファレンス・自社 FAQ・テーマ定義）と UI ライブラリの両方に密結合しています。切り出すなら、知識ベースを注入可能にすることと、UI から MUI 依存を外すことの 2 つが要ります。着手したところなので、形になったら別記事にします。
+## 自分の Storybook に入れる
+
+リファレンス実装から `src/ChatSupport/` を丸ごとコピーして Decorator を配線すれば動きます。このディレクトリは**外部への import を持たない**ので、置く階層は問いません。
+
+```bash
+npx degit BoxPistols/storybook-concierge/src/ChatSupport src/ChatSupport
+```
+
+**知識ベースを 1 行も書かなくても、そのプロジェクトのページについて答えます。** Storybook が既に持っているメタ情報（Story の `title` / `name` / `docs.description.component` / 現在の `args`）を Decorator が実行時に渡すためです。`storyGuideMap` の登録を 0 件にした状態で「この画面なに？」と聞くと、実際にこう返ります。
+
+```
+Controls パネルで variant / color / size を変更して、見た目の変化を…
+- variant — text（最も控えめ）/ outlined（枠線）/ contained（塗りつぶし）
+…
+このページで触れる props: variant, color, size, disabled, children
+```
+
+深い回答が要るページだけ、Storybook から下書きを生成して足していく形にできます。
+
+```bash
+pnpm build-storybook
+node scripts/generate-story-guide.mjs > src/ChatSupport/storyGuideMap.generated.ts
+```
+
+手順の全体と検証ゲート（build が通るだけでなく **dev も起動するか**、実ブラウザで FAB が出るか、Docs タブで重複しないか等）は、リポジトリ内の `skills/add-storybook-concierge/SKILL.md` にまとめてあります。Claude Code を使っているなら、これを `~/.claude/skills/` に置けばそのまま実行できます。
+
+### 残っている制約
+
+UI 層は **MUI に依存しています**。実測で ChatSupport 全体 6,398 行のうち、`@mui/material` を import しているのは 1,857 行（8 ファイル、依存率 29%）。残る 4,541 行 — AI 呼び出し・Embedding・FAQ 検索・状態管理 — は UI ライブラリ非依存です。
+
+Tailwind ベースのデザインシステムに入れる場合、チャット 1 つのために MUI を足すのは現実的ではありません。ロジック層を `useConcierge()` として切り出し、UI を利用側に委ねるヘッドレス化が本筋だと考えています。境界は既に 1 パッケージ・29% に収まっているので、そこは次の作業にします。
