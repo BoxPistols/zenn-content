@@ -212,7 +212,7 @@ const callDirect = async (
   const result = await generateText({
     model: resolveModelDirect(config),
     messages: toModelMessages(messagesPayload),
-    maxOutputTokens: resolveMaxOutputTokens(config.model, isTest),
+    maxOutputTokens: resolveMaxOutputTokens(config.model, { isTest }),
     abortSignal: AbortSignal.timeout(60000),
   })
 
@@ -269,27 +269,53 @@ async viteFinal(config, { configType }) {
 対策は上限にバッファを足すことです。
 
 ```ts
-// Gemini 2.5 系は reasoning tokens を maxOutputTokens に消費するため buffer 加算が必須
-// 不足すると finishReason='length' で本文が空になる
-const GEMINI_REASONING_BUFFER = 1200
+// lib/maxOutputTokens.ts
+// Gemini 2.5 系は reasoning tokens を maxOutputTokens から消費する。
+// 消費分は応答に現れないため、加算しないと finishReason='length' で本文が空になる
+export const GEMINI_REASONING_BUFFER = 1200
 
-const resolveMaxOutputTokens = (model: string, isTest: boolean): number => {
-  const isGemini25 = model.includes('gemini-2.5')
+export const resolveMaxOutputTokens = (
+  model: string,
+  options: { requested?: number; isTest?: boolean } = {}
+): number => {
+  const { requested, isTest = false } = options
+  const buffer = model.includes('gemini-2.5') ? GEMINI_REASONING_BUFFER : 0
 
   if (isTest) {
-    // テスト用の小さい上限でも、Gemini 2.5 は buffer + 最低出力 10 を確保しないと空になる
-    return isGemini25 ? GEMINI_REASONING_BUFFER + 10 : 50
+    // 疎通確認でも、Gemini 2.5 は buffer + 最低出力 10 を確保しないと空になる
+    return buffer > 0 ? buffer + 10 : 50
   }
-  if (model.includes('nano') || model.includes('luna')) return 4000
+  // 呼び出し側が算出済みの値（buffer 加算済み）はそのまま返す。二重加算しない
+  if (typeof requested === 'number' && requested > 0 && requested <= 32000) {
+    return requested
+  }
+  if (model.includes('nano') || model.includes('luna')) return 4000 + buffer
   if (model.includes('gpt-5') || model.includes('o1') || model.includes('o3')) {
-    return 16000
+    return 16000 + buffer
   }
-  if (isGemini25) return 4000 + GEMINI_REASONING_BUFFER
-  return 4000
+  return 4000 + buffer
 }
 ```
 
 テスト環境で `maxOutputTokens: 50` のような小さい値を使っている場合も同じ穴にはまります。**「疎通確認のテストだから小さくていい」と思って詰めた値が、Gemini でだけ必ず空を返す**という形で出ます。
+
+### この関数を 2 箇所に書くと、片方だけ静かに壊れる
+
+ブラウザから直接モデルを叩く経路とバックエンド経由の経路があると、この計算が両側に必要になります。筆者は最初それぞれのファイルに同じ関数を書き、**サーバー側にだけ Gemini の buffer 分岐を入れ忘れました**。
+
+厄介なのは、この状態でも**普段は動く**ことです。ブラウザ側が算出済みの `maxOutputTokens` をリクエストに載せて送るので、サーバーはその値をそのまま使います。バグが顔を出すのは、その値が届かない経路（別クライアント、範囲外の値でフォールバックしたとき）だけ。エラーは出ず、ただ Gemini の返事が空になります。
+
+対処は共有モジュールに 1 本化することですが、**単一ソースにしただけでは再発を防げません**。分岐を消しても壊れたことが分かるテストを併せて置きます。
+
+```ts
+it('Gemini 2.5 は buffer 分だけ他モデルより大きい', () => {
+  const gemini = resolveMaxOutputTokens('gemini-2.5-flash')
+  const other = resolveMaxOutputTokens('gemini-2.0-flash')
+  expect(gemini - other).toBe(GEMINI_REASONING_BUFFER)
+})
+```
+
+書いたら**一度わざと分岐を外して赤くなることを確認**してください。緑のまま通るテストは、何も守っていません。
 
 ## Step 5: ページ文脈認識（Story → システムプロンプト）
 
@@ -484,19 +510,29 @@ export class VectorIndex {
 筆者の実装がまさにこれで、guard が実際に発火するのは「同一インスタンスに 2 回投げる」ユニットテストの中だけでした。**テストは通るが本番の経路を再現していない**という型です。StrictMode の二重実行まで塞ぐなら、モジュールレベルで進行中の Promise を持つ必要があります。
 
 ```ts
-let building: Promise<void> | null = null
+// 構築中の Promise。同時呼び出しを 1 回の構築に合流させる
+let buildPromise: Promise<void> | null = null
 
 export const initEmbeddingIndex = async (apiKey: string): Promise<void> => {
   if (globalIndex?.isReady()) return
-  if (building) return building
-  building = (async () => {
+  // isReady() は build 完了後に true になるので、これだけでは構築中の
+  // 二重呼び出しを止められない
+  if (buildPromise) return buildPromise
+
+  buildPromise = (async () => {
     /* 既存の構築処理 */
-  })().finally(() => {
-    building = null
-  })
-  return building
+  })()
+
+  try {
+    await buildPromise
+  } finally {
+    // 失敗時は次の呼び出しで再構築できるよう必ず解放する
+    buildPromise = null
+  }
 }
 ```
+
+`finally` での解放を忘れると、**一度失敗したら以後永久に再構築できなくなります**。ここも「同時に呼んでも API 呼び出しは 1 回分」「失敗後に再試行できる」の 2 本をテストにして、合流を外すと落ちることを確認しておくのが確実です。
 
 索引化する知識ベースは 3 系統です。
 
@@ -835,6 +871,7 @@ Mac / Windows の判定は修飾キーの正規化側に閉じ込め、各ハン
 | IME 確定の Enter で誤送信              | `isComposing` 未チェック                  | グローバルと `nativeEvent` の 2 箇所で判定  |
 | 入力中にショートカットが暴発            | 入力欄フォーカスを見ていない              | `isInputFocused` でガード                   |
 | Gemini だけ空の返事が返る              | reasoning token が `maxOutputTokens` を食う | `GEMINI_REASONING_BUFFER` を加算            |
+| Gemini がバックエンド経由のときだけ空になる | 上限計算をブラウザ側とサーバー側に二重に書き、片方の分岐が欠けた | 共有モジュールに 1 本化し、**分岐を消すと赤くなるテスト**を置く |
 | Gemini のエラー内容が読めない          | OpenAI 互換 endpoint のエラーが配列形式   | ネイティブ endpoint を使う（AI SDK 経由）   |
 | 質問と無関係な FAQ が当たる            | バッチ embedding の順序を信用している     | `index` でソートしてから使う                |
 | Embedding が二重に課金される           | 初期化が並行して走る                      | **モジュールレベル**で進行中 Promise を保持（インスタンス変数では防げない） |
