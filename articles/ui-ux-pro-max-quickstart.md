@@ -13,7 +13,7 @@ published: true
 素晴らしいスキルを開発・公開してくださっている作者様に感謝いたします。
 
 :::message
-この記事はオリジナルの公式ドキュメントを基に作成しています。最新情報や詳細は、必ず公式リポジトリをご確認ください。
+この記事はオリジナルの公式ドキュメントを基に作成しています。収録数などは更新され続けているため、最新情報は必ず公式リポジトリをご確認ください。
 :::
 
 ## 公式リソース
@@ -24,47 +24,35 @@ published: true
 
 ## 概要
 
-UI/UX PRO MAXは、プロフェッショナルなUI/UX構築のためのAIスキルです。
+UI/UX PRO MAXは、UIスタイル・カラーパレット・タイポグラフィ・UXガイドラインの検索可能なデータベースをAIアシスタントに与えるスキルです。依頼を受けたAIがデータベースを検索し、製品タイプに合ったデザインシステムを選んでコードに反映します。
 
-### 主な機能
+収録数は2026年8月時点で次のとおりです。
 
-- 57種類のUIスタイル - Glassmorphism、Claymorphism、Minimalism、Brutalism、Neumorphism、Bento Grid、Dark Modeなど
-- 95種類のカラーパレット - SaaS、Eコマース、ヘルスケア、Fintech、美容など業界特化型
-- 56種類のフォントペアリング - Google Fontsインポート付きのキュレーションされたタイポグラフィ組み合わせ
-- 24種類のチャートタイプ - ダッシュボードと分析のための推奨事項
-- 8つの技術スタック - React、Next.js、Vue、Svelte、SwiftUI、React Native、Flutter、HTML+Tailwind
-- 98のUXガイドライン - ベストプラクティス、アンチパターン、アクセシビリティルール
+- UIスタイル79種類(Glassmorphism、Claymorphism、Minimalism、Brutalism、Neumorphism、Bento Grid、Dark Modeなど)
+- カラーパレット192種類(SaaS、Eコマース、ヘルスケア、Fintech、美容など業界特化型)
+- フォントペアリング74種類(Google Fontsのインポート付き)
+- チャートタイプ25種類(ダッシュボードと分析向けの推奨)
+- 技術スタック22種類(React、Next.js、Vue、Svelte、SwiftUI、React Native、Flutterほか)
+- UXガイドライン119件(ベストプラクティス、アンチパターン、アクセシビリティ)
 
-## インストール方法
+## 前提条件
 
-### 方法1: CLIを使用（推奨）
+CLIにNode.js、検索スクリプトにPython 3.xが必要です。
 
 ```bash
-# CLIをグローバルインストール
-npm install -g uipro-cli
-
-# プロジェクトディレクトリに移動
-cd /path/to/your/project
-
-# AI環境別インストール
-uipro init --ai claude      # Claude Code
-uipro init --ai cursor      # Cursor
-uipro init --ai windsurf    # Windsurf
-uipro init --ai antigravity # Antigravity
-uipro init --ai copilot     # GitHub Copilot
-uipro init --ai kiro        # Kiro
-uipro init --ai codebuddy   # CodeBuddy
-uipro init --ai codex       # Codex
-uipro init --ai continue    # Continue
-uipro init --ai gemini      # Gemini
-uipro init --ai opencode    # OpenCode
-uipro init --ai qoder       # Qoder
-uipro init --ai roo         # Roo Code
-uipro init --ai trae        # Trae
-uipro init --ai all         # 全アシスタント
+python3 --version   # 3.x が表示されればOK
 ```
 
-### その他のCLIコマンド
+入っていない場合はmacOSなら `brew install python3`、Ubuntu/Debianなら `sudo apt install python3`、Windowsなら `winget install Python.Python.3.12` で導入できます。
+
+## インストール
+
+```bash
+npm install -g uipro-cli
+cd /path/to/your/project
+uipro init --ai claude   # 使う環境を指定(指定名は下表)
+uipro init --ai all      # 対応する全環境に一括インストール
+```
 
 ```bash
 uipro versions              # 利用可能なバージョン一覧
@@ -72,298 +60,132 @@ uipro update                # 最新バージョンにアップデート
 uipro init --version v1.0.0 # 特定バージョンをインストール
 ```
 
-### `.gitignore` の設定
+### 対応環境とインストール先
 
-スキルファイルはCLIで動的に生成されるため、各開発者がローカルで `uipro init` を実行する運用が推奨です。Git管理対象から除外しましょう。
+`--ai` の指定名とインストール先の対応です。手動で入れる場合も、GitHubリポジトリからこのインストール先へ配置します。
 
-**Claude Codeのみ使用する場合：**
+| 環境 | `--ai` 指定 | インストール先 |
+|---|---|---|
+| Claude Code | `claude` | `.claude/skills/ui-ux-pro-max/` |
+| Cursor | `cursor` | `.cursor/skills/ui-ux-pro-max/` |
+| Windsurf | `windsurf` | `.windsurf/skills/ui-ux-pro-max/` |
+| Antigravity | `antigravity` | `.agent/skills/ui-ux-pro-max/` |
+| GitHub Copilot | `copilot` | `.github/prompts/ui-ux-pro-max/` |
+| Kiro | `kiro` | `.kiro/steering/ui-ux-pro-max/` |
+| CodeBuddy | `codebuddy` | `.codebuddy/skills/ui-ux-pro-max/` |
+| Codex | `codex` | `.codex/skills/ui-ux-pro-max/` |
+| Continue | `continue` | `.continue/skills/ui-ux-pro-max/` |
+| Gemini | `gemini` | `.gemini/skills/ui-ux-pro-max/` |
+| OpenCode | `opencode` | `.opencode/skills/ui-ux-pro-max/` |
+| Qoder | `qoder` | `.qoder/skills/ui-ux-pro-max/` |
+| Roo Code | `roo` | `.roo/skills/ui-ux-pro-max/` |
+| Trae | `trae` | `.trae/skills/ui-ux-pro-max/` |
+
+### .gitignoreの設定
+
+スキルファイルはCLIで生成されるため、リポジトリにはコミットせず、各開発者がローカルで `uipro init` を実行する運用が推奨です。上表のインストール先を `.gitignore` に入れます。Claude Codeだけで使う場合は次の2行で足ります。
 
 ```gitignore
 # UI/UX PRO MAX
-.claude/skills/ui-ux-pro-max/
-```
-
-**複数環境を一括で使用する場合（`uipro init --ai all`）：**
-
-```gitignore
-# UI/UX PRO MAX
-
-# Claude Code
 .claude/skills/ui-ux-pro-max/
 .claude/settings.local.json
-
-# Cursor
-.cursor/skills/ui-ux-pro-max/
-
-# Windsurf
-.windsurf/skills/ui-ux-pro-max/
-
-# Antigravity
-.agent/skills/ui-ux-pro-max/
-
-# GitHub Copilot（.github/ 全体ではなくスキルディレクトリのみ）
-.github/prompts/ui-ux-pro-max/
-
-# Kiro
-.kiro/steering/ui-ux-pro-max/
-
-# CodeBuddy
-.codebuddy/skills/ui-ux-pro-max/
-
-# Codex
-.codex/skills/ui-ux-pro-max/
-
-# Continue
-.continue/skills/ui-ux-pro-max/
-
-# Gemini
-.gemini/skills/ui-ux-pro-max/
-
-# OpenCode
-.opencode/skills/ui-ux-pro-max/
-
-# Qoder
-.qoder/skills/ui-ux-pro-max/
-
-# Roo Code
-.roo/skills/ui-ux-pro-max/
-
-# Trae
-.trae/skills/ui-ux-pro-max/
 ```
+
+`--ai all` で入れる場合は上表の全インストール先を同様に列挙します。順序に注意してください。`.gitignore` への追記を `uipro init` より先に済ませないと、`git add` で誤ってステージされる場合があります。
 
 :::message
 `.github/` や `.claude/` など他の用途と共有するディレクトリは、ディレクトリ全体ではなく `ui-ux-pro-max/` ディレクトリ単位で指定してください。`.github/` 全体をignoreするとGitHub ActionsやIssueテンプレートに影響します。
 :::
 
-**一括セットアップの流れ：**
-
-```bash
-# 1. .gitignore に追記（先に設定しないと git add で誤ってステージされる場合がある）
-cat >> .gitignore << 'EOF'
-
-# UI/UX PRO MAX
-.claude/skills/ui-ux-pro-max/
-.claude/settings.local.json
-.cursor/skills/ui-ux-pro-max/
-.windsurf/skills/ui-ux-pro-max/
-.agent/skills/ui-ux-pro-max/
-.github/prompts/ui-ux-pro-max/
-.kiro/steering/ui-ux-pro-max/
-.codebuddy/skills/ui-ux-pro-max/
-.codex/skills/ui-ux-pro-max/
-.continue/skills/ui-ux-pro-max/
-.gemini/skills/ui-ux-pro-max/
-.opencode/skills/ui-ux-pro-max/
-.qoder/skills/ui-ux-pro-max/
-.roo/skills/ui-ux-pro-max/
-.trae/skills/ui-ux-pro-max/
-EOF
-
-# 2. 全環境に一括インストール
-uipro init --ai all
-```
-
-:::details既にgit addしてしまった場合
+:::details git addを先にしてしまった場合の解除
 `.gitignore` を設定する前に `uipro init` を実行し、`git add` でファイルをステージしてしまった場合、ignoreが効きません。以下で解除できます。
 
 ```bash
-# ステージ済みの ui-ux-pro-max ファイルを追跡対象から除外（ファイル自体は削除されない）
+# ステージ済みの ui-ux-pro-max ファイルを追跡対象から除外(ファイル自体は削除されない)
 git rm --cached -r .github/prompts/ui-ux-pro-max/ 2>/dev/null
 git rm --cached -r .claude/skills/ui-ux-pro-max/ 2>/dev/null
 # 他にステージされたツールがあれば同様に実行
 ```
 :::
 
-### 方法2: 手動インストール
-
-GitHubリポジトリから直接ダウンロード：
-
-| AIアシスタント | インストール先 |
-|---|---|
-| Claude Code | `.claude/skills/ui-ux-pro-max/` |
-| Cursor | `.cursor/skills/ui-ux-pro-max/` |
-| Windsurf | `.windsurf/skills/ui-ux-pro-max/` |
-| Antigravity | `.agent/skills/ui-ux-pro-max/` |
-| GitHub Copilot | `.github/prompts/ui-ux-pro-max/` |
-| Kiro | `.kiro/steering/ui-ux-pro-max/` |
-| CodeBuddy | `.codebuddy/skills/ui-ux-pro-max/` |
-| Codex | `.codex/skills/ui-ux-pro-max/` |
-| Continue | `.continue/skills/ui-ux-pro-max/` |
-| Gemini | `.gemini/skills/ui-ux-pro-max/` |
-| OpenCode | `.opencode/skills/ui-ux-pro-max/` |
-| Qoder | `.qoder/skills/ui-ux-pro-max/` |
-| Roo Code | `.roo/skills/ui-ux-pro-max/` |
-| Trae | `.trae/skills/ui-ux-pro-max/` |
-
-## 前提条件
-
-Python 3.xが必要です（検索スクリプト用）。
-
-```bash
-# Pythonバージョン確認
-python3 --version
-
-# macOS
-brew install python3
-
-# Ubuntu/Debian
-sudo apt update && sudo apt install python3
-
-# Windows
-winget install Python.Python.3.12
-```
-
 ## 使い方
 
-### Claude Code
-
-UI/UX作業をリクエストすると自動的にスキルが起動します。
+Claude CodeではUI/UX作業を依頼すると自動的にスキルが起動します。
 
 ```
 SaaS製品用のランディングページを構築して
 ```
 
-### Cursor / Windsurf / Antigravity
-
-スラッシュコマンドでスキルを起動：
+その他の環境(Cursor、Windsurf、Antigravity、Kiro、GitHub Copilotなど)では、スラッシュコマンドに依頼を続けます。コマンド名はどの環境でも同じです。
 
 ```
 /ui-ux-pro-max SaaS製品用のランディングページを構築して
 ```
 
-### Kiro
-
-チャットで `/` を入力してコマンド一覧を表示、`ui-ux-pro-max` を選択：
+依頼の例です。
 
 ```
-/ui-ux-pro-max SaaS製品用のランディングページを構築して
-```
-
-### GitHub Copilot
-
-VS CodeのCopilotで `/` を入力してプロンプト一覧を表示、`ui-ux-pro-max` を選択：
-
-```
-/ui-ux-pro-max SaaS製品用のランディングページを構築して
-```
-
-## サンプルプロンプト
-
-```bash
-# ランディングページ
-SaaS製品用のランディングページを構築して
-
-# ダッシュボード
 ヘルスケア分析用のダッシュボードを作成して
-
-# ポートフォリオ
 ダークモード付きのポートフォリオサイトをデザインして
-
-# モバイルアプリUI
 Eコマース用のモバイルアプリUIを作成して
 ```
 
-## 仕組み
+内部の動きは4段階です。
 
-1. **リクエスト** - UI/UXタスクを依頼（build、design、create、implement、review、fix、improve）
-2. **スキル起動** - AIが自動的にデザインデータベースから関連するスタイル、カラー、タイポグラフィ、ガイドラインを検索
-3. **スマートな推奨** - 製品タイプと要件に基づいて、最適なデザインシステムを見つける
-4. **コード生成** - 適切なカラー、フォント、スペーシング、ベストプラクティスでUIを実装
+1. リクエスト - UI/UXタスクを依頼(build、design、create、implement、review、fix、improve)
+2. スキル起動 - AIがデザインデータベースから関連するスタイル、カラー、タイポグラフィ、ガイドラインを検索
+3. 推奨 - 製品タイプと要件に基づいてデザインシステムを選定
+4. コード生成 - 選ばれたカラー、フォント、スペーシング、ガイドラインでUIを実装
 
-## 対応スタック
+スタックはプロンプトで指定します。指定がなければHTML + Tailwindが使われます。
 
-スタック固有のガイドラインを提供：
-
-- HTML + Tailwind（デフォルト）
-- React / **Next.js**
-- Vue / **Svelte**
-- SwiftUI / **React Native** / **Flutter**
-
-プロンプトで希望のスタックを指定するか、デフォルトのHTML + Tailwindが使用されます。
-
-## 実践例：MUI + Tailwind CSS環境での活用
+## 実践例: MUI + Tailwind CSS環境での活用
 
 ### ユースケース1: デザインシステムの構築
 
-```bash
-# プロンプト例
+```
 MUI7とTailwind CSSを使ったデザインシステムを構築して。
 SaaS向けのモダンなスタイルで、アクセシビリティも重視してください。
 ```
 
-スキルは以下を提供：
-
-- SaaS向けの推奨カラーパレット
-- MUI7のテーマ設定とTailwindの統合方法
-- アクセシビリティガイドライン（WCAG 2.1 AA準拠）
+SaaS向けの推奨カラーパレット、MUI7のテーマ設定とTailwindの統合方法、WCAG 2.1 AA準拠のアクセシビリティガイドラインが反映されます。
 
 ### ユースケース2: コンポーネントのレビューと改善
 
-```bash
-# プロンプト例
+```
 このMUIボタンコンポーネントをレビューして、
 UXガイドラインに基づいた改善提案をください。
 ```
 
-スキルは以下をチェック：
-
-- タッチターゲットサイズ（44x44px以上）
-- コントラスト比（WCAG基準）
-- インタラクション状態（hover、focus、active）
-- レスポンシブデザイン
+タッチターゲットサイズ(44x44px以上)、コントラスト比(WCAG基準)、インタラクション状態(hover、focus、active)、レスポンシブデザインがチェックされます。
 
 ### ユースケース3: Next.js + MUIダッシュボード
 
-```bash
-# プロンプト例
+```
 Next.js 15とMUI7を使って、データ分析ダッシュボードを作成して。
 グラスモーフィズムスタイルで、チャートはRechartsを使用。
 ```
 
-スキルは提供：
-
-- グラスモーフィズムのスタイル定義
-- 推奨チャートタイプとライブラリ統合
-- MUI7 + Next.js 15のベストプラクティス
-- レスポンシブグリッドレイアウト
+グラスモーフィズムのスタイル定義、推奨チャートタイプとライブラリ統合、レスポンシブグリッドレイアウトが反映されます。
 
 ## トラブルシューティング
 
-### Python関連のエラー
+Pythonのエラーが出る場合は、前提条件の節のコマンドでPython 3.xの有無を確認してください。
+
+CLIのインストールに失敗する場合の再インストール手順です。
 
 ```bash
-# Pythonがインストールされているか確認
-python3 --version
-
-# インストールされていない場合
-# macOS
-brew install python3
-
-# Ubuntu/Debian
-sudo apt update && sudo apt install python3
-```
-
-### CLIインストールエラー
-
-```bash
-# キャッシュをクリア
 npm cache clean --force
-
-# グローバルパッケージを確認
-npm list -g uipro-cli
-
-# 再インストール
 npm uninstall -g uipro-cli
 npm install -g uipro-cli
 ```
 
-### スキルが起動しない場合
+スキルが起動しない場合は次の3点を確認してください。
 
-1. プロジェクトディレクトリに正しくインストールされているか確認
-2. `.claude/skills/ui-ux-pro-max/` ディレクトリが存在するか確認
-3. AIアシスタントを再起動
+1. プロジェクトディレクトリに正しくインストールされているか
+2. `.claude/skills/ui-ux-pro-max/` (使用環境のインストール先)が存在するか
+3. AIアシスタントの再起動
 
 ## まとめ
 
-UI/UX PRO MAXは、フロントエンド開発者がプロフェッショナルなUI/UXを効率的に構築するための強力なツールです。豊富なデザインリソースとベストプラクティスガイドラインにより、高品質なユーザーインターフェースを短時間で実装できます。
+UI/UX PRO MAXは、スタイル79・パレット192・UXガイドライン119件のデザインデータベースをAIの検索対象にするスキルです。導入は `uipro init` の1コマンドで、14のAI環境で同じデータベースが使えます。デザインの引き出しを増やしたいときと、生成UIの品質を揃えたいときに役立ちます。
