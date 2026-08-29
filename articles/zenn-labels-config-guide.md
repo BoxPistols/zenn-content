@@ -220,73 +220,7 @@ labels-sync --verbose
 
 最も柔軟で機能的な方法です。現在のディレクトリから自動的にリポジトリ情報を取得します。
 
-### Zshの場合
-
-```bash
-# ~/.zshrc に追加
-labels-sync() {
-  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-
-  if [[ -z "$repo" ]]; then
-    echo "エラー: Gitリポジトリ内で実行してください"
-    return 1
-  fi
-
-  # owner/repo を分割
-  local owner=$(echo "$repo" | cut -d'/' -f1)
-  local repo_name=$(echo "$repo" | cut -d'/' -f2)
-
-  echo "同期先: $repo"
-
-  # 最初の引数がオプション(--で始まる)かファイル名かを判定
-  local file="labels.json"
-  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
-    file="$1"
-    shift
-  fi
-
-  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
-}
-```
-
-### Bashの場合
-
-```bash
-# ~/.bashrc に追加
-labels-sync() {
-  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-
-  if [[ -z "$repo" ]]; then
-    echo "エラー: Gitリポジトリ内で実行してください"
-    return 1
-  fi
-
-  # owner/repo を分割
-  local owner=$(echo "$repo" | cut -d'/' -f1)
-  local repo_name=$(echo "$repo" | cut -d'/' -f2)
-
-  echo "同期先: $repo"
-
-  # 最初の引数がオプション(--で始まる)かファイル名かを判定
-  local file="labels.json"
-  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
-    file="$1"
-    shift
-  fi
-
-  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
-}
-```
-
-### 設定の反映
-
-```bash
-# Zsh
-source ~/.zshrc
-
-# Bash
-source ~/.bashrc
-```
+関数本体はクイックスタートStep 3で追加した `labels-sync` そのものです（Zshは `~/.zshrc`、Bashは `~/.bashrc`、中身は同一）。`gh repo view` でカレントディレクトリのリポジトリを特定し、第1引数がファイル名なら設定ファイルとして、`--` で始まればオプションとしてそのまま `labels-config sync` に渡します。
 
 ### 使い方
 
@@ -435,77 +369,10 @@ labels-export
 labels-export my-labels.json
 ```
 
-## ワンライナーセットアップ
+## まとめて追記する場合
 
-以下のコマンドで一括セットアップできます。
+方法1の `labels-sync` と追加ユーティリティの `labels-export` を一度に入れる場合は、クイックスタートStep 3と同じ要領で `cat << 'EOF' >> ~/.zshrc`（Bashは `~/.bashrc`）のヒアドキュメントに関数をまとめて貼り付け、`source` で反映します。
 
-### Zsh
-
-```bash
-cat << 'EOF' >> ~/.zshrc
-
-# labels-config 自動リポジトリ検出
-labels-sync() {
-  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
-  local owner=$(echo "$repo" | cut -d'/' -f1)
-  local repo_name=$(echo "$repo" | cut -d'/' -f2)
-  echo "同期先: $repo"
-  local file="labels.json"
-  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
-    file="$1"
-    shift
-  fi
-  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
-}
-
-labels-export() {
-  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
-  local owner=$(echo "$repo" | cut -d'/' -f1)
-  local repo_name=$(echo "$repo" | cut -d'/' -f2)
-  local output="${1:-labels-exported.json}"
-  echo "エクスポート元: $repo"
-  labels-config export --owner "$owner" --repo "$repo_name" --output "$output"
-}
-EOF
-
-source ~/.zshrc
-```
-
-### Bash
-
-```bash
-cat << 'EOF' >> ~/.bashrc
-
-# labels-config 自動リポジトリ検出
-labels-sync() {
-  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
-  local owner=$(echo "$repo" | cut -d'/' -f1)
-  local repo_name=$(echo "$repo" | cut -d'/' -f2)
-  echo "同期先: $repo"
-  local file="labels.json"
-  if [[ -n "$1" && ! "$1" =~ ^-- ]]; then
-    file="$1"
-    shift
-  fi
-  labels-config sync --owner "$owner" --repo "$repo_name" --file "$file" "$@"
-}
-
-labels-export() {
-  local repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-  [[ -z "$repo" ]] && { echo "エラー: Gitリポジトリ内で実行してください"; return 1; }
-  local owner=$(echo "$repo" | cut -d'/' -f1)
-  local repo_name=$(echo "$repo" | cut -d'/' -f2)
-  local output="${1:-labels-exported.json}"
-  echo "エクスポート元: $repo"
-  labels-config export --owner "$owner" --repo "$repo_name" --output "$output"
-}
-EOF
-
-source ~/.bashrc
-```
 
 # 利用可能なテンプレート
 
