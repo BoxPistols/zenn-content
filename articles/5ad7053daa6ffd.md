@@ -36,7 +36,7 @@ IT業界でかつて当たり前に使われていた用語の中に、差別的
 | master record / master data | reference record, golden record | データ管理の文脈 |
 
 :::message
-MySQLは8.0.26（2021年）で`SHOW REPLICA STATUS`等に変更済み。PostgreSQLもドキュメント上で従来から`primary`/`standby`を使用しており、14（2021年）前後で`slave`の残存箇所が除去されています。古いドキュメントやスクリプトに残っている場合は更新を推奨します。
+MySQLは8.0.22（2020年）で`SHOW REPLICA STATUS`等の別名を導入し、8.0.26（2021年）で`CHANGE REPLICATION SOURCE TO`等の残る構文も置き換え済み。PostgreSQLもドキュメント上で従来から`primary`/`standby`を使用しており、14（2021年）前後で`slave`の残存箇所が除去されています。古いドキュメントやスクリプトに残っている場合は更新を推奨します。
 :::
 
 ### 人種差別に由来する用語
@@ -151,7 +151,7 @@ IT文脈で使われることがある日本語の差別表現です。放送禁
 | GitHub | 2020 | master（ブランチ） | main |
 | Jenkins | 2016/2020 | slave / master | agent / controller |
 | Redis 5.0 | 2018 | SLAVEOF | REPLICAOF |
-| MySQL 8.0.26 | 2021 | SHOW SLAVE STATUS等 | SHOW REPLICA STATUS等 |
+| MySQL 8.0.22 | 2020 | SHOW SLAVE STATUS等 | SHOW REPLICA STATUS等 |
 | PostgreSQL | 〜2021 | master / slave | primary / standby |
 | Kubernetes 1.20 | 2020 | master | control plane |
 | Django 1.7 | 2014 | master / slave | primary / replica |
