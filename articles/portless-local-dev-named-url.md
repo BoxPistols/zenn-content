@@ -8,7 +8,7 @@ published: true
 
 ## はじめに
 
-複数のアプリを同時開発していると、`localhost:3000`や`:5173`の奪い合いが日常的に発生します。どこで何が動いているのか混乱し、気づけばポートが衝突してエラー、という経験は誰しもあるはずです。
+複数のアプリを同時開発していると、`localhost:3000`や`:5173`の奪い合いが日常的に発生します。どこで何が動いているのか混乱し、気づけばポートが衝突してエラーになります。
 
 さらに最近はAI駆動の開発が当たり前になり、AIエージェントが勝手にサーバーを立てて動作確認するケースも増えました。こうなると、もはやlocalhostの状態を人間が把握するのは困難です。
 
@@ -24,12 +24,12 @@ Vercel Labsが開発した、ローカル開発サーバーのポート番号を
 
 公式READMEの概要を日本語でまとめると:
 
-- ポート番号の代わりに名前でアクセス - `localhost:3000` → `my-app.localhost:1355`
-- ポート衝突を自動回避 - 空きポートを自動割り当てするため`EADDRINUSE`が起きない
-- HTTP/2 + HTTPS対応 - `--https`フラグでSSL証明書を自動生成・信頼ストアに登録
-- sudo不要 - デフォルトのポート1355なら管理者権限なしで動作
+- ポート番号の代わりに名前でアクセス - `localhost:3000` → `https://my-app.localhost`
+- ポート衝突を自動回避 - アプリには4000-4999の空きポートを`PORT`環境変数で自動割り当てするため`EADDRINUSE`が起きない
+- HTTP/2 + HTTPSが既定 - 初回起動時にローカルCAを生成して信頼ストアに登録し、443番にバインドする(macOS/Linuxではsudoへ自動昇格)。HTTPにしたい場合は`--no-tls`
 - モノレポ対応 - サービスごとにサブドメインを割り当てられる
 - 設定ファイル変更不要 - 環境変数`PORT`経由で動くためgit差分が出ない
+- 共有機能 - LANモード、Tailscale、ngrok経由で他端末・外部への共有もできる
 
 ```
 # Before: ポート番号で管理
@@ -38,15 +38,15 @@ http://localhost:3001    ← どのアプリ？
 http://localhost:5173    ← どのアプリ？
 
 # After: 名前で管理
-http://my-app.localhost:1355
-http://api-server.localhost:1355
-http://docs-site.localhost:1355
+https://my-app.localhost
+https://api-server.localhost
+https://docs-site.localhost
 ```
 
-### 動作要件
+### 動作要件 (v0.15時点)
 
-- Node.js 20以上
-- macOSまたはLinux
+- Node.js 24以上
+- macOS・Linux・Windows
 
 ## 導入
 
@@ -74,7 +74,7 @@ portless proxy start
 portless my-app npm run dev
 ```
 
-これだけで`http://my-app.localhost:1355`でアクセスできます。
+これだけで`https://my-app.localhost`でアクセスできます。
 
 ### git差分を出さずに使う
 
@@ -114,16 +114,16 @@ portless my-app npm run dev
 
 を実行すると、内部では以下が起きます。
 
-1. **空きポートを自動で確保**する（例: `4191`）
-2. **`PORT=4191 npm run dev`**としてアプリを起動する
-3. **`http://my-app.localhost:1355`**へのアクセスを`localhost:4191`に転送する
+1. 4000-4999の範囲で空きポートを自動確保する（例: `4191`）
+2. `PORT=4191 npm run dev` としてアプリを起動する
+3. `https://my-app.localhost` へのアクセスを`localhost:4191`に転送する
 
 ```
 ブラウザ
   │
-  │  http://my-app.localhost:1355
+  │  https://my-app.localhost
   ▼
-Portlessプロキシ (:1355)
+Portlessプロキシ (:443)
   │
   │  localhost:4191 に転送
   ▼
@@ -200,13 +200,15 @@ portless my-app pnpm turbo dev     # Turborepo経由
 
 ## 便利な使い方
 
-### HTTPS対応
+### HTTPSは既定で有効
+
+現在のバージョンではHTTPSがデフォルトです。初回起動時にローカルCAを生成してシステムの信頼ストアに登録し、443番ポートにバインドします(macOS/Linuxでは必要に応じてsudoへ自動昇格)。証明書エラーの出ないHTTPSローカル環境が何もせずに手に入ります。
+
+平文HTTPで使いたい場合だけ `--no-tls` を付けます。
 
 ```bash
-portless proxy start --https
+portless proxy start --no-tls   # 80番でHTTP
 ```
-
-SSL証明書を自動生成し、システムの信頼ストアに登録してくれます。`https://my-app.localhost:1355`でアクセス可能になります。
 
 ### モノレポでのサブドメイン活用
 
@@ -225,9 +227,9 @@ portless docs npm run dev
 
 それぞれ以下でアクセスできます。
 
-- `http://frontend.localhost:1355`
-- `http://api.localhost:1355`
-- `http://docs.localhost:1355`
+- `https://frontend.localhost`
+- `https://api.localhost`
+- `https://docs.localhost`
 
 ### 稼働中のルート確認
 
@@ -263,21 +265,22 @@ niの詳細は https://osgsm.io/note/ni-unify-package-manager-commands/ が参�
 
 | 環境変数 | 説明 |
 |----------|------|
-| `PORTLESS_PORT` | プロキシのポート番号を変更 |
-| `PORTLESS_HTTPS=1` | 常にHTTPSを有効化 |
+| `PORTLESS_PORT` | プロキシのポート番号を変更 (例: `portless proxy start -p 1355`と同等) |
+| `PORTLESS_APP_PORT` | アプリ側のポートを固定 (`--app-port`と同等) |
+| `PORTLESS_HTTPS=0` | HTTPSを無効化 (`--no-tls`と同等) |
 | `PORTLESS_STATE_DIR` | 状態ディレクトリのパスを変更 |
 | `PORTLESS=0` | 一時的にPortlessをバイパス |
 
+このほかLAN公開(`PORTLESS_LAN`)、TLD変更(`PORTLESS_TLD`)、Tailscale/ngrok共有などの変数もあります。アプリ側には`PORT`のほか、自分の公開URLが`PORTLESS_URL`として渡されます。
+
 ## まとめ
 
-Portlessは「ポート番号を意識しなくていい開発体験」を提供してくれるツールです。
+- 導入 - グローバルインストールして`portless <名前> <コマンド>`を前置するだけ
+- 設定ファイル不要 - `PORT`環境変数経由なのでgit差分が出ない
+- 名前でアクセス - `portless list`でどのアプリがどこで動いているか分かる
+- 衝突しない - アプリごとに空きポートが自動割り当てされる
+- AI駆動開発との併用 - AIが立てたサーバーも名前で把握できる
 
-- 導入が簡単 - グローバルインストールして`portless <名前> <コマンド>`するだけ
-- 設定ファイル不要 - git差分が出ない
-- 名前でアクセス - どのアプリがどこで動いているか一目瞭然
-- 衝突しない - ポート番号の奪い合いが起きない
-- AI駆動開発と相性が良い - AIが立てたサーバーも名前で把握できる
-
-複数プロジェクトを同時に開発している人、AIエージェントを活用している人には特におすすめです。
+複数プロジェクトの同時開発と、AIエージェントがサーバーを立てる環境で効きます。開発が活発でNode要件や既定値が変わるので、導入時は公式READMEを確認してください。
 
 https://github.com/vercel-labs/portless
