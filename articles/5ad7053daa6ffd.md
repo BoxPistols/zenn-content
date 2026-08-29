@@ -237,8 +237,8 @@ module.exports = {
 
 - [GitHub - デフォルトブランチをmainに変更（2020年）](https://github.blog/changelog/2020-10-01-the-default-branch-for-newly-created-repositories-is-now-main/)
 - [Jenkins - Terminology Update（2020年）](https://www.jenkins.io/blog/2020/06/18/terminology-update/)
-- [Redis - REPLICAOF コマンド（5.0〜）](https://redis.io/docs/latest/commands/replicaof/)
-- [MySQL 8.0.26 リリースノート（2021年）](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-26.html)
+- [Redis - REPLICAOFコマンド（5.0〜）](https://redis.io/docs/latest/commands/replicaof/)
+- [MySQL 8.0.26リリースノート（2021年）](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-26.html)
 - [Kubernetes KEP-2067 - master→control plane](https://github.com/kubernetes/enhancements/issues/2067)
 - [Django Ticket #22667 - master/slave → primary/replica（2014年）](https://code.djangoproject.com/ticket/22667)
 - [Python 3.12 - pty module非推奨化](https://docs.python.org/3/whatsnew/3.12.html)

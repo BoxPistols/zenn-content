@@ -1,5 +1,5 @@
 ---
-title: "UI/UX PRO MAX クイックスタートガイド"
+title: "UI/UX PRO MAXクイックスタートガイド"
 emoji: "🎨"
 type: "tech"
 topics: ["uiux", "claude", "cursor", "ai", "frontend"]
@@ -8,7 +8,7 @@ published: true
 
 ## はじめに
 
-本記事は、**nextlevelbuilder**氏が開発・公開している「**UI/UX PRO MAX**」スキルの紹介記事です。公式ドキュメントを日本語に翻訳し、内容を再構成してまとめたものになります。
+本記事は、**nextlevelbuilder**氏が開発・公開している「**UI/UX PRO MAX**」スキルの紹介記事です。公式ドキュメントを日本語に翻訳し、内容を再構成してまとめたものです。
 
 素晴らしいスキルを開発・公開してくださっている作者様に感謝いたします。
 
@@ -18,9 +18,9 @@ published: true
 
 ## 公式リソース
 
-- **GitHubリポジトリ**: [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
-- **公式サイト**: [ui-ux-pro-max-skill.nextlevelbuilder.io](https://ui-ux-pro-max-skill.nextlevelbuilder.io)
-- **ライセンス**: MIT
+- GitHubリポジトリ: [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+- 公式サイト: [ui-ux-pro-max-skill.nextlevelbuilder.io](https://ui-ux-pro-max-skill.nextlevelbuilder.io)
+- ライセンス: MIT
 
 ## 概要
 
@@ -28,12 +28,12 @@ UI/UX PRO MAXは、プロフェッショナルなUI/UX構築のためのAIスキ
 
 ### 主な機能
 
-- **57種類のUIスタイル** - Glassmorphism、Claymorphism、Minimalism、Brutalism、Neumorphism、Bento Grid、Dark Modeなど
-- **95種類のカラーパレット** - SaaS、Eコマース、ヘルスケア、Fintech、美容など業界特化型
-- **56種類のフォントペアリング** - Google Fontsインポート付きのキュレーションされたタイポグラフィ組み合わせ
-- **24種類のチャートタイプ** - ダッシュボードと分析のための推奨事項
-- **8つの技術スタック** - React、Next.js、Vue、Svelte、SwiftUI、React Native、Flutter、HTML+Tailwind
-- **98のUXガイドライン** - ベストプラクティス、アンチパターン、アクセシビリティルール
+- 57種類のUIスタイル - Glassmorphism、Claymorphism、Minimalism、Brutalism、Neumorphism、Bento Grid、Dark Modeなど
+- 95種類のカラーパレット - SaaS、Eコマース、ヘルスケア、Fintech、美容など業界特化型
+- 56種類のフォントペアリング - Google Fontsインポート付きのキュレーションされたタイポグラフィ組み合わせ
+- 24種類のチャートタイプ - ダッシュボードと分析のための推奨事項
+- 8つの技術スタック - React、Next.js、Vue、Svelte、SwiftUI、React Native、Flutter、HTML+Tailwind
+- 98のUXガイドライン - ベストプラクティス、アンチパターン、アクセシビリティルール
 
 ## インストール方法
 
@@ -76,7 +76,7 @@ uipro init --version v1.0.0 # 特定バージョンをインストール
 
 スキルファイルはCLIで動的に生成されるため、各開発者がローカルで `uipro init` を実行する運用が推奨です。Git管理対象から除外しましょう。
 
-**Claude Code のみ使用する場合：**
+**Claude Codeのみ使用する場合：**
 
 ```gitignore
 # UI/UX PRO MAX
@@ -133,7 +133,7 @@ uipro init --version v1.0.0 # 特定バージョンをインストール
 ```
 
 :::message
-`.github/` や `.claude/` など他の用途と共有するディレクトリは、ディレクトリ全体ではなく `ui-ux-pro-max/` ディレクトリ単位で指定してください。`.github/` 全体を ignore すると GitHub Actions やIssueテンプレートに影響します。
+`.github/` や `.claude/` など他の用途と共有するディレクトリは、ディレクトリ全体ではなく `ui-ux-pro-max/` ディレクトリ単位で指定してください。`.github/` 全体をignoreするとGitHub ActionsやIssueテンプレートに影響します。
 :::
 
 **一括セットアップの流れ：**
@@ -164,8 +164,8 @@ EOF
 uipro init --ai all
 ```
 
-:::details 既に git add してしまった場合
-`.gitignore` を設定する前に `uipro init` を実行し、`git add` でファイルをステージしてしまった場合、ignore が効きません。以下で解除できます：
+:::details既にgit addしてしまった場合
+`.gitignore` を設定する前に `uipro init` を実行し、`git add` でファイルをステージしてしまった場合、ignoreが効きません。以下で解除できます。
 
 ```bash
 # ステージ済みの ui-ux-pro-max ファイルを追跡対象から除外（ファイル自体は削除されない）
@@ -198,7 +198,7 @@ GitHubリポジトリから直接ダウンロード：
 
 ## 前提条件
 
-Python 3.x が必要です（検索スクリプト用）。
+Python 3.xが必要です（検索スクリプト用）。
 
 ```bash
 # Pythonバージョン確認
@@ -218,7 +218,7 @@ winget install Python.Python.3.12
 
 ### Claude Code
 
-UI/UX作業をリクエストすると自動的にスキルが起動します：
+UI/UX作業をリクエストすると自動的にスキルが起動します。
 
 ```
 SaaS製品用のランディングページを構築して
@@ -275,10 +275,10 @@ Eコマース用のモバイルアプリUIを作成して
 
 スタック固有のガイドラインを提供：
 
-- **HTML + Tailwind**（デフォルト）
-- **React** / **Next.js**
-- **Vue** / **Svelte**
-- **SwiftUI** / **React Native** / **Flutter**
+- HTML + Tailwind（デフォルト）
+- React / **Next.js**
+- Vue / **Svelte**
+- SwiftUI / **React Native** / **Flutter**
 
 プロンプトで希望のスタックを指定するか、デフォルトのHTML + Tailwindが使用されます。
 
@@ -313,7 +313,7 @@ UXガイドラインに基づいた改善提案をください。
 - インタラクション状態（hover、focus、active）
 - レスポンシブデザイン
 
-### ユースケース3: Next.js + MUI ダッシュボード
+### ユースケース3: Next.js + MUIダッシュボード
 
 ```bash
 # プロンプト例

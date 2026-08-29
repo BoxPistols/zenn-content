@@ -16,8 +16,8 @@ GitHub Copilot CLI、Gemini CLI、Claude Code。2025年以降、ターミナル�
 
 ## こんな人向け
 
-- Volta でNode.jsのツール管理をしている
-- Copilot CLI / Gemini CLI / Claude Code を日常的に使っている
+- VoltaでNode.jsのツール管理をしている
+- Copilot CLI / Gemini CLI / Claude Codeを日常的に使っている
 - アップデートを忘れがち、または毎回コマンドを調べている
 
 ## 前提環境
@@ -60,13 +60,13 @@ npm install -g @anthropic-ai/claude-code@latest  # Volta管理から外れる
 
 ## 方法1: ワンライナー（最もシンプル）
 
-結論から言えば、これだけで動きます：
+結論から言えば、これだけで動きます。
 
 ```bash
 volta install @github/copilot@latest && volta install @google/gemini-cli@latest && volta install @anthropic-ai/claude-code@latest
 ```
 
-aliasに登録しておくと便利です：
+aliasに登録しておくと便利です。
 
 ```bash
 # .zshrc に追加
@@ -339,7 +339,7 @@ claude    2.1.39    2.1.39     @anthropic-ai/claude-code (最新)
 
 ## ツールを追加する場合
 
-スクリプト版であれば、`TOOLS` 配列に1行追加するだけです：
+スクリプト版であれば、`TOOLS` 配列に1行追加するだけです。
 
 ```bash
 TOOLS=(
@@ -357,14 +357,14 @@ TOOLS=(
 
 - AI CLIツールはパッケージ名がバラバラで覚えにくい
 - 3つともVoltaで管理すれば `volta install <pkg>@latest` に統一できる
-- ワンライナーなら alias 1行、細かく制御したいならスクリプト版
-- alias は `.zshrc` に、スクリプト版は `~/bin` に置いて PATH を通せば `update-ai` 一発で最新化できる
+- ワンライナーならalias 1行、細かく制御したいならスクリプト版
+- aliasは `.zshrc` に、スクリプト版は `~/bin` に置いてPATHを通せば `update-ai` 一発で最新化できる
 
-## 追記 26-06-29 Gemini / Claude Code / GitHub Copilot を volta 管轄から外す手順
+## 追記26-06-29 Gemini / Claude Code / GitHub Copilotをvolta管轄から外す手順
 
 volta管理はあまり運用が良くないため、voltaを剥がします
 
-volta 本体（node ツールチェーン管理）は残したまま、以下 3 つの CLI だけを volta から外し、pnpm グローバル管理に移す。
+volta本体（nodeツールチェーン管理）は残したまま、以下3つのCLIだけをvoltaから外し、pnpmグローバル管理に移す。
 
 - Claude Code … `@anthropic-ai/claude-code`
 - Gemini CLI  … `@google/gemini-cli`（実パッケージ名に合わせる）
@@ -377,7 +377,7 @@ volta list all                       # volta 管理下の一覧を控える
 which -a claude gemini copilot       # 各実体のパス
 ```
 
-## 1. volta から 3 つをアンインストール
+## 1. voltaから3つをアンインストール
 
 ```bash
 volta uninstall @anthropic-ai/claude-code
@@ -387,7 +387,7 @@ volta uninstall @github/copilot
 
 これで `~/.volta/bin` 配下の該当シムが消える。
 
-## 2. pnpm グローバルで入れ直す
+## 2. pnpmグローバルで入れ直す
 
 ```bash
 pnpm add -g @anthropic-ai/claude-code
@@ -395,7 +395,7 @@ pnpm add -g @google/gemini-cli
 pnpm add -g @github/copilot
 ```
 
-## 3. PATH 解決の確認
+## 3. PATH解決の確認
 
 ```bash
 which claude    # → ~/Library/pnpm/claude （volta でないこと）
@@ -404,22 +404,22 @@ which copilot   # → ~/Library/pnpm/...
 claude --version
 ```
 
-`~/.volta/bin` を指したままなら、PATH 上で volta が pnpm より前にある。
-`~/.zshrc` で `~/Library/pnpm` を volta より前に置くか、
-volta 側シムが残っていないか（手順1の取りこぼし）を確認する。
+`~/.volta/bin` を指したままなら、PATH上でvoltaがpnpmより前にある。
+`~/.zshrc` で `~/Library/pnpm` をvoltaより前に置くか、
+volta側シムが残っていないか（手順1の取りこぼし）を確認する。
 
 ## 4. 今後の更新運用
 
-この 3 つは pnpm で更新する（`volta install` は使わない）:
+この3つはpnpmで更新する（`volta install` は使わない）:
 
 ```bash
 pnpm update -g @anthropic-ai/claude-code @google/gemini-cli @github/copilot
 ```
 
-node / その他ツールは引き続き volta で管理。
+node / その他ツールは引き続きvoltaで管理。
 
 ## メモ
-- volta uninstall = volta 管理対象から除外（shim 削除）。
-- 同名ツールが pnpm と volta 両方に残ると PATH 順で挙動が変わるため、
-  手順3 の `which` 確認は必須。
+- volta uninstall = volta管理対象から除外（shim削除）。
+- 同名ツールがpnpmとvolta両方に残るとPATH順で挙動が変わるため、
+  手順3の `which` 確認は必須。
 ```

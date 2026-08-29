@@ -1,5 +1,5 @@
 ---
-title: "フロントエンド・UI/UXデザイナー向け Claude Code 設定ガイド"
+title: "フロントエンド・UI/UXデザイナー向けClaude Code設定ガイド"
 emoji: "🎨"
 type: "tech"
 topics: ["claudecode", "frontend", "uiux", "figma", "mcp"]
@@ -22,8 +22,8 @@ published: true
 
 | 設定 | 実現すること |
 |------|-----------|
-| **1. frontend-design スキル** | 「ボタン作ってください」と指示するだけで、Claude Code が自動的に**見栄えが良い、プロフェッショナルなUI**を生成。グラスモーフィズム、ニューモーフィズムなど最新デザイントレンドも自動適用 |
-| **2. Figma連携** | Figmaで作ったデザインを Claude Code で直接参照 → デザイン完全準拠＆見栄えの良いReactコンポーネント自動生成 |
+| **1. frontend-designスキル** | 「ボタン作ってください」と指示するだけで、Claude Codeが自動的に**見栄えが良い、プロフェッショナルなUI**を生成。グラスモーフィズム、ニューモーフィズムなど最新デザイントレンドも自動適用 |
+| **2. Figma連携** | Figmaで作ったデザインをClaude Codeで直接参照 → デザイン完全準拠＆見栄えの良いReactコンポーネント自動生成 |
 | **3. CLAUDE.md** | 毎回「React + TypeScript」「このカラーパレットを使って」などの指示の手間をゼロに |
 
 **結果:** 指示するだけで、見栄えが良いプロフェッショナルなUIコンポーネントが自動で完成。デザイナーもエンジニアも「え、これ手動で作ったの？」と言わせるレベルのクオリティが実現できます。
@@ -32,9 +32,9 @@ published: true
 
 ### セットアップ手順（5分で完了）
 
-#### 1. frontend-design スキルを高速インストール
+#### 1. frontend-designスキルを高速インストール
 
-このスキルが Claude Code に導入されると、フロントエンド関連のリクエストを検知して、**見栄えの良いプロフェッショナルなUIデザイン**（Glassmorphism、Neumorphism、Bento Grid等の最新トレンド、美しいカラーパレット、洗練されたタイポグラフィなど）を自動的に参照・適用するようになります。
+このスキルがClaude Codeに導入されると、フロントエンド関連のリクエストを検知して、**見栄えの良いプロフェッショナルなUIデザイン**（Glassmorphism、Neumorphism、Bento Grid等の最新トレンド、美しいカラーパレット、洗練されたタイポグラフィなど）を自動的に参照・適用するようになります。
 
 ターミナルで以下を実行：
 
@@ -45,15 +45,15 @@ curl -o ~/.claude/skills/frontend-design/SKILL.md https://raw.githubusercontent.
 
 → これ以降、「カードコンポーネントを作ってください」と言うだけで、自動的に**グラフィックデザイン的に美しい、今風のUIが生成**されます。
 
-**または GUI方式（手動が楽な場合）:**
+**またはGUI方式（手動が楽な場合）:**
 ```bash
 claude /plugin
 # Marketplaces > Browse plugins > frontend-design + figma をインストール
 ```
 
-#### 2. Figma Access Token を設定
+#### 2. Figma Access Tokenを設定
 
-Figma MCP（Model Context Protocol）サーバーをセットアップすることで、Figmaで作ったデザイン（カラー、レイアウト、タイポグラフィなど）を Claude Code が直接読み込み、**それをそのまま見栄え良くReactコンポーネント化**できるようになります。
+Figma MCP（Model Context Protocol）サーバーをセットアップすることで、Figmaで作ったデザイン（カラー、レイアウト、タイポグラフィなど）をClaude Codeが直接読み込み、**それをそのまま見栄え良くReactコンポーネント化**できるようになります。
 
 `~/.claude.json` に追加（なければファイルを新規作成）：
 
@@ -77,7 +77,7 @@ Figma MCP（Model Context Protocol）サーバーをセットアップするこ�
 
 → これで「このFigmaのデザインをReactコンポーネントにして」と指示するだけで、Figmaで作ったデザインの見栄えをそのまま実装できるようになります。デザイナーとエンジニアの「見た目のズレ」が完全になくなります。
 
-#### 3. CLAUDE.md にプロジェクトのデザイン・スタイルを記載
+#### 3. CLAUDE.mdにプロジェクトのデザイン・スタイルを記載
 
 プロジェクト共通の「デザインシステム」や「見栄えの方針」を定義することで、毎回「MUIで作ってください」「このカラーパレット使ってください」等を指示する手間が省けます。
 
@@ -108,7 +108,7 @@ EOF
 
 ## 基礎編 - Claude Codeの設定ファイル構造
 
-Claude Codeの設定は以下のディレクトリに集約されます：
+Claude Codeの設定は以下のディレクトリに集約されます。
 
 ```
 ~/.claude/
@@ -120,7 +120,7 @@ Claude Codeの設定は以下のディレクトリに集約されます：
 ~/.claude.json         # MCP設定
 ```
 
-### CLAUDE.md でフロントエンドルールを一元管理
+### CLAUDE.mdでフロントエンドルールを一元管理
 
 毎回同じ指示を入力する手間を省けます。
 
@@ -186,7 +186,7 @@ fi
 
 ## Skills編 - UI/UX PRO MAX
 
-### UI/UX PRO MAX とは
+### UI/UX PRO MAXとは
 
 プロフェッショナルなUI/UX構築のためのスキルです。Claude CodeがUIタスクを検知すると自動的に起動し、最適なデザインリソースを参照します。
 
@@ -205,10 +205,10 @@ uipro init --ai claude
 ```
 
 :::message
-**個人用 vs チーム共有**
+**個人用vsチーム共有**
 
 `uipro init` を実行すると `.claude/skills/` 配下に多数のファイルが生成されます。
-配置場所によってgit管理の方針が変わります：
+配置場所によってgit管理の方針が変わります。
 
 | 配置場所 | 用途 | git管理 |
 |---------|------|---------|
@@ -230,14 +230,14 @@ uipro init --ai claude
 .claude/skills/ui-ux-pro-max/
 ```
 
-複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのパスもすべて ignore する必要があります。`uipro init --ai all` での一括セットアップと `.gitignore` の全パターンについては、以下の記事を参照してください：
+複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのパスもすべてignoreする必要があります。`uipro init --ai all` での一括セットアップと `.gitignore` の全パターンについては、以下の記事を参照してください：
 
-👉 [UI/UX PRO MAX クイックスタートガイド - .gitignore の設定](https://zenn.dev/and_and/articles/ui-ux-pro-max-quickstart#.gitignore-%E3%81%AE%E8%A8%AD%E5%AE%9A)
+👉 [UI/UX PRO MAXクイックスタートガイド - .gitignoreの設定](https://zenn.dev/and_and/articles/ui-ux-pro-max-quickstart#.gitignore-%E3%81%AE%E8%A8%AD%E5%AE%9A)
 :::
 
 ### 使い方
 
-UI/UX関連のリクエストをすると自動起動します：
+UI/UX関連のリクエストをすると自動起動します。
 
 ```
 SaaS向けのダッシュボードを構築して。
@@ -261,7 +261,7 @@ FigmaデザインをClaude Codeから直接参照できます。
 
 **セットアップ手順：**
 
-1. **Figma Access Token を取得**
+1. **Figma Access Tokenを取得**
    - Figma → Settings → Account → Personal access tokens
    - 「Generate new token」でトークンを生成
 
@@ -341,7 +341,7 @@ localhost:3000 をモバイル（375px）とデスクトップ（1440px）で
 遷移先の画面をキャプチャして
 ```
 
-### Storybook / Chromatic 連携
+### Storybook / Chromatic連携
 
 Storybookを活用したコンポーネント開発フローを強化できます。
 
@@ -409,16 +409,16 @@ curl -o ~/.claude/skills/frontend-design/SKILL.md \
   https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
 ```
 
-**方式2: GUI プラグインマーケットプレイス**
+**方式2: GUIプラグインマーケットプレイス**
 
 ```bash
 claude /plugin
 # Marketplaces > Browse plugins (45) から検索してインストール
 ```
 
-### TL;DR で推奨する主要プラグイン
+### TL;DRで推奨する主要プラグイン
 
-#### 1. frontend-design スキル（優先度: 最高）
+#### 1. frontend-designスキル（優先度: 最高）
 
 **機能:**
 - UI/UXデザイン仕様の自動参照
@@ -432,10 +432,10 @@ ls ~/.claude/skills/frontend-design/SKILL.md
 # ファイルが存在すれば OK
 ```
 
-#### 2. figma プラグイン / MCP（優先度: 高）
+#### 2. figmaプラグイン / MCP（優先度: 高）
 
 **機能:**
-- Figma MCP サーバーを統合（TL;DR Step 2で設定）
+- Figma MCPサーバーを統合（TL;DR Step 2で設定）
 - Figmaデザインファイルの直接参照
 - デザイン → コンポーネント自動生成
 - リアルタイムデザイン更新対応
@@ -448,7 +448,7 @@ cat ~/.claude.json | grep -A 5 "figma"
 
 ### プラグイン有効化確認
 
-インストール後、Claude Code を再起動してプラグインを認識させます：
+インストール後、Claude Codeを再起動してプラグインを認識させます。
 
 ```bash
 claude /plugin
@@ -473,11 +473,11 @@ claude /plugin
 ```
 
 **結果:**
-- `frontend-design` プラグインが UI/UXガイドラインを自動参照
-- `figma` MCPが Figmaデザイン仕様を適用
+- `frontend-design` プラグインがUI/UXガイドラインを自動参照
+- `figma` MCPがFigmaデザイン仕様を適用
 - アクセシビリティ対応のプロダクション品質コンポーネント生成
 
-### Installed プラグイン管理
+### Installedプラグイン管理
 
 インストール済みプラグインの確認・管理：
 
@@ -513,7 +513,7 @@ claude /plugin
 
 ### プラグインの自動更新設定
 
-Marketplaces から自動更新を有効化：
+Marketplacesから自動更新を有効化：
 
 ```
 /plugin > Marketplaces > claude-plugins-official
@@ -552,7 +552,7 @@ Updated 2026/1/14
 
 ## 実践ワークフロー例
 
-### ワークフロー1: Figma → React コンポーネント
+### ワークフロー1: Figma → Reactコンポーネント
 
 ```mermaid
 graph LR
@@ -705,7 +705,7 @@ Storybook/Chromaticで品質確認
 3. `~/.claude/CLAUDE.md` でフロントエンド開発ルール定義
 
 **推奨（基礎固めの後）:**
-4. UI/UX PRO MAX をホームディレクトリにインストール
+4. UI/UX PRO MAXをホームディレクトリにインストール
 5. Storybook/Playwright MCP設定
 6. 自動承認設定で ワークフロー効率化
 
@@ -713,6 +713,6 @@ Storybook/Chromaticで品質確認
 
 ## 参考リンク
 
-- [Claude Code 公式ドキュメント](https://docs.anthropic.com/claude-code)
+- [Claude Code公式ドキュメント](https://docs.anthropic.com/claude-code)
 - [UI/UX PRO MAX GitHub](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
-- [MCP 公式ドキュメント](https://modelcontextprotocol.io/)
+- [MCP公式ドキュメント](https://modelcontextprotocol.io/)

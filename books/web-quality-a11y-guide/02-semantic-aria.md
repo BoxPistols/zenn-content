@@ -1,14 +1,14 @@
 ---
-title: "セマンティック HTML と ARIA"
+title: "セマンティックHTMLとARIA"
 ---
 
-Web アクセシビリティの土台となるセマンティック HTML と ARIA 属性を体系的に扱う。スクリーンリーダーやキーボード操作に対応した、すべてのユーザーが利用可能なインターフェースを構築するための知識を整理する。
+Webアクセシビリティの土台となるセマンティックHTMLとARIA属性を体系的に扱う。スクリーンリーダーやキーボード操作に対応した、すべてのユーザーが利用可能なインターフェースを構築するための知識を整理する。
 
-## セマンティック HTML とは
+## セマンティックHTMLとは
 
-セマンティック（意味論的）HTML とは、コンテンツの「意味」と「構造」を正しく伝える HTML 要素を使うことである。見た目は CSS で制御できるが、構造の意味はブラウザ、スクリーンリーダー、検索エンジンが HTML 要素のタグ名から判断する。
+セマンティック（意味論的）HTMLとは、コンテンツの「意味」と「構造」を正しく伝えるHTML要素を使うことである。見た目はCSSで制御できるが、構造の意味はブラウザ、スクリーンリーダー、検索エンジンがHTML要素のタグ名から判断する。
 
-### なぜ div と span だけではダメなのか
+### なぜdivとspanだけではダメなのか
 
 `<div>` と `<span>` は汎用コンテナであり、それ自体に意味を持たない。スクリーンリーダーはこれらの要素を「グループ」や「テキスト」としか認識できず、ナビゲーションなのか、メインコンテンツなのか、補足情報なのかを伝えられない。
 
@@ -55,18 +55,18 @@ Web アクセシビリティの土台となるセマンティック HTML と ARI
 ```
 
 :::message
-セマンティック HTML の恩恵:
+セマンティックHTMLの恩恵:
 - スクリーンリーダーがランドマークジャンプでページを素早く移動できる
-- 検索エンジンがコンテンツの構造を正しく理解し SEO が向上する
+- 検索エンジンがコンテンツの構造を正しく理解しSEOが向上する
 - コードの可読性が上がり、開発者間での意思疎通がスムーズになる
 - ブラウザのリーダーモードがコンテンツを正しく抽出できる
 :::
 
 ## ランドマーク要素の正しい使い方
 
-ランドマーク要素は、ページの大まかな構造を定義する HTML5 要素である。スクリーンリーダーのユーザーはランドマーク間をジャンプして目的のセクションに素早くたどり着ける。
+ランドマーク要素は、ページの大まかな構造を定義するHTML5要素である。スクリーンリーダーのユーザーはランドマーク間をジャンプして目的のセクションに素早くたどり着ける。
 
-| 要素 | 暗黙の ARIA ロール | 用途 |
+| 要素 | 暗黙のARIAロール | 用途 |
 |---|---|---|
 | `<header>` | banner | ページまたはセクションのヘッダー。サイトロゴ、グローバルナビゲーション等 |
 | `<nav>` | navigation | ナビゲーションリンクのグループ。メニュー、パンくずリスト等 |
@@ -79,7 +79,7 @@ Web アクセシビリティの土台となるセマンティック HTML と ARI
 :::message alert
 ランドマーク要素の注意点:
 - `<main>` はページに1つだけ。複数配置するとスクリーンリーダーが混乱する
-- 同じ種類のランドマークが複数ある場合（nav が2つ等）は `aria-label` で区別する
+- 同じ種類のランドマークが複数ある場合（navが2つ等）は `aria-label` で区別する
 - `<section>` は見出し（h2-h6）なしで使うとランドマークとして認識されない
 - ランドマーク要素を過剰にネストしない。ページの大枠の構造を示すために使う
 :::
@@ -114,9 +114,9 @@ h1 ショッピングサイト
       h4 カテゴリ別
 ```
 
-### React コンポーネントでの見出しレベル管理
+### Reactコンポーネントでの見出しレベル管理
 
-再利用可能なコンポーネントでは、見出しレベルを Props で受け取ることで、配置場所に応じた適切な階層を維持できる。
+再利用可能なコンポーネントでは、見出しレベルをPropsで受け取ることで、配置場所に応じた適切な階層を維持できる。
 
 ```tsx
 // 見出しレベルを Props で受け取ることで、再利用性を確保する
@@ -157,14 +157,14 @@ function ProductPage() {
 }
 ```
 
-## ARIA の基本原則
+## ARIAの基本原則
 
-WAI-ARIA（Web Accessibility Initiative - Accessible Rich Internet Applications）は、HTML だけでは伝えきれないインタラクティブな UI の意味と状態を補足するための仕様である。ただし、最も重要な原則は「ARIA を使わないのが最良の ARIA」であるということである。
+WAI-ARIA（Web Accessibility Initiative - Accessible Rich Internet Applications）は、HTMLだけでは伝えきれないインタラクティブなUIの意味と状態を補足するための仕様である。ただし、最も重要な原則は「ARIAを使わないのが最良のARIA」であるということである。
 
-### ARIA の5つのルール
+### ARIAの5つのルール
 
-1. ネイティブ HTML 要素で代替できるなら、ARIA を使わない
-2. ネイティブ HTML のセマンティクスを ARIA で上書きしない
+1. ネイティブHTML要素で代替できるなら、ARIAを使わない
+2. ネイティブHTMLのセマンティクスをARIAで上書きしない
 3. すべてのインタラクティブ要素はキーボードで操作可能にする
 4. フォーカス可能な要素に `role="presentation"` や `aria-hidden="true"` を使わない
 5. すべてのインタラクティブ要素にはアクセシブルな名前を付ける
@@ -204,12 +204,12 @@ WAI-ARIA（Web Accessibility Initiative - Accessible Rich Internet Applications�
 ```
 
 :::message
-ARIA はネイティブ HTML では表現できない「動的な状態」や「カスタムウィジェット」のために存在する。例えば、アコーディオンの開閉状態、タブパネルの選択状態、モーダルダイアログの存在、ライブリージョンによる動的な通知など。これらはネイティブ HTML だけでは伝えられない。
+ARIAはネイティブHTMLでは表現できない「動的な状態」や「カスタムウィジェット」のために存在する。例えば、アコーディオンの開閉状態、タブパネルの選択状態、モーダルダイアログの存在、ライブリージョンによる動的な通知など。これらはネイティブHTMLだけでは伝えられない。
 :::
 
-## 必須 ARIA 属性
+## 必須ARIA属性
 
-### aria-label / aria-labelledby / aria-describedby の使い分け
+### aria-label / aria-labelledby / aria-describedbyの使い分け
 
 これら3つの属性は要素に「名前」や「説明」を付与するが、使い分けが重要である。
 
@@ -267,7 +267,7 @@ ARIA はネイティブ HTML では表現できない「動的な状態」や「
 </button>
 ```
 
-### aria-expanded / aria-controls（開閉 UI）
+### aria-expanded / aria-controls（開閉UI）
 
 ```tsx
 function Accordion({ title, children }: { title: string; children: React.ReactNode }) {
@@ -308,7 +308,7 @@ function Accordion({ title, children }: { title: string; children: React.ReactNo
 
 ### aria-live / aria-atomic（動的コンテンツ通知）
 
-SPA では画面遷移やデータ更新が JavaScript で動的に行われる。スクリーンリーダーはページのリロードなしに変化を検知できないため、`aria-live` で変更を通知する必要がある。
+SPAでは画面遷移やデータ更新がJavaScriptで動的に行われる。スクリーンリーダーはページのリロードなしに変化を検知できないため、`aria-live` で変更を通知する必要がある。
 
 ```tsx
 // polite: 現在の読み上げが終わってから通知（多くの場面で適切）
@@ -372,9 +372,9 @@ function Navigation({ currentPath }: { currentPath: string }) {
 // スクリーンリーダーは「商品、リンク、現在のページ」と読み上げる
 ```
 
-### role 属性の正しい使い方
+### role属性の正しい使い方
 
-`role` 属性は要素の役割をブラウザに伝えるが、カスタムウィジェットの場合にのみ使うべきである。ネイティブ HTML 要素に冗長な role を付ける必要はない。
+`role` 属性は要素の役割をブラウザに伝えるが、カスタムウィジェットの場合にのみ使うべきである。ネイティブHTML要素に冗長なroleを付ける必要はない。
 
 ```tsx
 // 不要な例: ネイティブ要素には暗黙の role がある
@@ -403,15 +403,15 @@ function Navigation({ currentPath }: { currentPath: string }) {
 
 ## フォーカス管理
 
-### tabindex の使い分け
+### tabindexの使い分け
 
-`tabindex` 属性は要素のフォーカス可能性と Tab キーでの移動順序を制御する。値によって動作が大きく異なるため、正しい使い分けが重要である。
+`tabindex` 属性は要素のフォーカス可能性とTabキーでの移動順序を制御する。値によって動作が大きく異なるため、正しい使い分けが重要である。
 
 | 値 | 動作 | 使用場面 |
 |---|---|---|
-| `tabindex="0"` | Tab キーで到達可能。DOM 順序でフォーカスが移動 | 通常フォーカス不可の要素をフォーカス可能にする場合 |
-| `tabindex="-1"` | Tab キーでは到達不可。JavaScript の focus() で制御可能 | プログラム的にフォーカスを移す必要がある要素（モーダル、エラー表示等） |
-| `tabindex="1+"` | 指定した数値の順番でフォーカスが移動 | **使用禁止。DOM の自然な順序が壊れ、混乱を招く** |
+| `tabindex="0"` | Tabキーで到達可能。DOM順序でフォーカスが移動 | 通常フォーカス不可の要素をフォーカス可能にする場合 |
+| `tabindex="-1"` | Tabキーでは到達不可。JavaScriptのfocus() で制御可能 | プログラム的にフォーカスを移す必要がある要素（モーダル、エラー表示等） |
+| `tabindex="1+"` | 指定した数値の順番でフォーカスが移動 | **使用禁止。DOMの自然な順序が壊れ、混乱を招く** |
 
 ```tsx
 // tabindex="0": カスタムコンポーネントをフォーカス可能にする
@@ -460,7 +460,7 @@ function Modal({ isOpen, onClose, title, children }) {
 
 ### フォーカストラップの実装
 
-モーダルダイアログを開いているとき、Tab キーによるフォーカスがモーダル内に閉じ込められる必要がある。モーダルの外にフォーカスが移動すると、背景要素と意図せず操作してしまう危険がある。
+モーダルダイアログを開いているとき、Tabキーによるフォーカスがモーダル内に閉じ込められる必要がある。モーダルの外にフォーカスが移動すると、背景要素と意図せず操作してしまう危険がある。
 
 ```tsx
 function useFocusTrap(ref: RefObject<HTMLElement | null>, isActive: boolean) {
@@ -497,9 +497,9 @@ function useFocusTrap(ref: RefObject<HTMLElement | null>, isActive: boolean) {
 }
 ```
 
-### Skip Navigation リンク
+### Skip Navigationリンク
 
-ページの先頭にナビゲーションが長く続く場合、キーボードユーザーは毎回すべてのリンクを Tab で通過しなければならない。Skip Navigation リンクを設置すると、メインコンテンツに直接ジャンプできる。
+ページの先頭にナビゲーションが長く続く場合、キーボードユーザーは毎回すべてのリンクをTabで通過しなければならない。Skip Navigationリンクを設置すると、メインコンテンツに直接ジャンプできる。
 
 ```tsx
 function Layout({ children }: { children: React.ReactNode }) {
@@ -537,7 +537,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 ## 画像の代替テキスト
 
-`alt` 属性は画像が表示されない環境や、スクリーンリーダーで利用するユーザーに画像の内容を伝える。すべての `<img>` タグには必ず alt 属性を設定する。
+`alt` 属性は画像が表示されない環境や、スクリーンリーダーで利用するユーザーに画像の内容を伝える。すべての `<img>` タグには必ずalt属性を設定する。
 
 ```tsx
 // 1. 意味のある画像: 内容を簡潔に説明する
@@ -645,7 +645,7 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | 'pending' }) 
 
 ## キーボード操作パターン
 
-インタラクティブなカスタムウィジェットは、WAI-ARIA Authoring Practices に定義されたキーボード操作パターンに従う必要がある。
+インタラクティブなカスタムウィジェットは、WAI-ARIA Authoring Practicesに定義されたキーボード操作パターンに従う必要がある。
 
 | キー | 一般的な動作 |
 |---|---|
@@ -658,7 +658,7 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | 'pending' }) 
 | `Home / End` | リストの先頭 / 末尾に移動 |
 
 :::message
-**roving tabindex パターン**: グループ内で1つの要素だけが `tabIndex={0}` を持ち、他の要素は `tabIndex={-1}` にする。Tab キーでグループに入り、矢印キーでグループ内を移動し、Tab キーでグループから抜ける動作を実現する。タブリスト、メニュー、ラジオグループなど多くのウィジェットでこのパターンが使われる。
+**roving tabindexパターン**: グループ内で1つの要素だけが `tabIndex={0}` を持ち、他の要素は `tabIndex={-1}` にする。Tabキーでグループに入り、矢印キーでグループ内を移動し、Tabキーでグループから抜ける動作を実現する。タブリスト、メニュー、ラジオグループなど多くのウィジェットでこのパターンが使われる。
 :::
 
 ## スクリーンリーダーのテスト方法
@@ -670,8 +670,8 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | 'pending' }) 
 - `Cmd + F5` で起動 / 終了
 - `VO + Right Arrow` で次の要素へ
 - `VO + U` でローター（ランドマーク、見出し、リンク一覧）を表示
-- VO キーは `Ctrl + Option`
-- Safari との組み合わせが推奨される
+- VOキーは `Ctrl + Option`
+- Safariとの組み合わせが推奨される
 
 ### Windows: NVDA
 
@@ -679,7 +679,7 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | 'pending' }) 
 - `Insert + F7` で要素リストを表示
 - `H` で次の見出しへジャンプ
 - `D` で次のランドマークへジャンプ
-- Firefox / Chrome との組み合わせが推奨される
+- Firefox / Chromeとの組み合わせが推奨される
 
 ### テストチェックリスト
 
@@ -700,70 +700,70 @@ function StatusBadge({ status }: { status: 'active' | 'inactive' | 'pending' }) 
 
 :::message
 **自動テストツールとの組み合わせ**:
-- **axe-core / @axe-core/react**: 開発中にコンソールでアクセシビリティ違反を検出
-- **eslint-plugin-jsx-a11y**: JSX 記述時にリアルタイムで問題を警告
-- **Lighthouse**: Chrome DevTools でアクセシビリティスコアを測定
-- **Storybook addon-a11y**: Story ごとにアクセシビリティチェックを実行
+- axe-core / @axe-core/react: 開発中にコンソールでアクセシビリティ違反を検出
+- eslint-plugin-jsx-a11y: JSX記述時にリアルタイムで問題を警告
+- Lighthouse: Chrome DevToolsでアクセシビリティスコアを測定
+- Storybook addon-a11y: Storyごとにアクセシビリティチェックを実行
 - 自動ツールで検出できるのは全体の約30%。残りは手動テストが必要
 :::
 
 ## 理解度チェック
 
-:::details クイズ: aria-label と aria-labelledby の使い分けとして正しいものはどれか
+:::detailsクイズ: aria-labelとaria-labelledbyの使い分けとして正しいものはどれか
 **選択肢:**
-1. aria-label は見出し要素にのみ使い、aria-labelledby はすべての要素に使える
-2. aria-labelledby は画面上に既にテキストがある場合にその要素を参照し、aria-label は画面上にテキストがない場合に直接名前を指定する
-3. aria-label はフォーム要素専用で、aria-labelledby はランドマーク要素専用
+1. aria-labelは見出し要素にのみ使い、aria-labelledbyはすべての要素に使える
+2. aria-labelledbyは画面上に既にテキストがある場合にその要素を参照し、aria-labelは画面上にテキストがない場合に直接名前を指定する
+3. aria-labelはフォーム要素専用で、aria-labelledbyはランドマーク要素専用
 4. 両者に違いはなく、どちらを使っても同じ結果になる
 
 **正解: 2**
 
-aria-labelledby は画面上に表示されている別の要素のテキストを参照して名前を付ける。aria-label は画面上にテキストが存在しない場合（アイコンボタンなど）に直接文字列で名前を指定する。画面上にテキストがある場合は aria-labelledby を優先して使うことで、画面表示と支援技術への情報が一致する。
+aria-labelledbyは画面上に表示されている別の要素のテキストを参照して名前を付ける。aria-labelは画面上にテキストが存在しない場合（アイコンボタンなど）に直接文字列で名前を指定する。画面上にテキストがある場合はaria-labelledbyを優先して使うことで、画面表示と支援技術への情報が一致する。
 :::
 
-:::details クイズ: tabindex 属性に正の値（tabindex="5" など）を設定することが推奨されない理由はどれか
+:::detailsクイズ: tabindex属性に正の値（tabindex="5" など）を設定することが推奨されない理由はどれか
 **選択肢:**
 1. ブラウザのパフォーマンスが低下するから
-2. HTML の仕様で正の値は非推奨と定められているから
-3. DOM の自然な順序とは異なるフォーカス順序になり、ユーザーの操作が混乱するから
-4. スクリーンリーダーが正の値の tabindex を無視するから
+2. HTMLの仕様で正の値は非推奨と定められているから
+3. DOMの自然な順序とは異なるフォーカス順序になり、ユーザーの操作が混乱するから
+4. スクリーンリーダーが正の値のtabindexを無視するから
 
 **正解: 3**
 
-tabindex に正の値を設定すると、その要素がすべての tabindex="0" の要素よりも先にフォーカスを受ける。複数の要素に異なる正の値を設定すると、画面上の視覚的な順序と Tab キーでのフォーカス順序が一致しなくなり、特にキーボードユーザーにとって操作が予測不能になる。DOM の自然な順序（ソースコード順）でフォーカスが移動するのが最も直感的である。
+tabindexに正の値を設定すると、その要素がすべてのtabindex="0" の要素よりも先にフォーカスを受ける。複数の要素に異なる正の値を設定すると、画面上の視覚的な順序とTabキーでのフォーカス順序が一致しなくなり、特にキーボードユーザーにとって操作が予測不能になる。DOMの自然な順序（ソースコード順）でフォーカスが移動するのが最も直感的である。
 :::
 
-:::details クイズ: 「ARIA を使わないのが最良の ARIA」とはどういう意味か
+:::detailsクイズ: 「ARIAを使わないのが最良のARIA」とはどういう意味か
 **選択肢:**
-1. ARIA はバグが多いため、使用を完全に避けるべきだという意味
-2. ネイティブ HTML 要素が適切なセマンティクスを持つ場合はそれを使い、ARIA は HTML だけでは表現できない場合にのみ使うべきだという意味
-3. ARIA は古い技術であり、現代のブラウザでは不要になったという意味
-4. ARIA よりも CSS でアクセシビリティを制御すべきだという意味
+1. ARIAはバグが多いため、使用を完全に避けるべきだという意味
+2. ネイティブHTML要素が適切なセマンティクスを持つ場合はそれを使い、ARIAはHTMLだけでは表現できない場合にのみ使うべきだという意味
+3. ARIAは古い技術であり、現代のブラウザでは不要になったという意味
+4. ARIAよりもCSSでアクセシビリティを制御すべきだという意味
 
 **正解: 2**
 
-ネイティブ HTML 要素（button, nav, main, input 等）は最初から適切なロール、キーボード操作、スクリーンリーダー対応を備えている。ARIA は HTML だけではカバーできないカスタムウィジェット（タブ、アコーディオン、ツリービュー等）の状態や関係性を補足するための仕様である。ARIA を不適切に使うと、かえってアクセシビリティを悪化させる可能性があるため、まずネイティブ HTML で解決できるか検討する。
+ネイティブHTML要素（button, nav, main, input等）は最初から適切なロール、キーボード操作、スクリーンリーダー対応を備えている。ARIAはHTMLだけではカバーできないカスタムウィジェット（タブ、アコーディオン、ツリービュー等）の状態や関係性を補足するための仕様である。ARIAを不適切に使うと、かえってアクセシビリティを悪化させる可能性があるため、まずネイティブHTMLで解決できるか検討する。
 :::
 
 ## まとめ
 
-**セマンティック HTML**
+**セマンティックHTML**
 
-- header, nav, main, aside, footer でページ構造を定義
-- h1-h6 の階層構造をスキップせず正しく設計
-- div/span の代わりにネイティブ要素を活用
-- 画像には必ず適切な alt 属性を設定
+- header, nav, main, aside, footerでページ構造を定義
+- h1-h6の階層構造をスキップせず正しく設計
+- div/spanの代わりにネイティブ要素を活用
+- 画像には必ず適切なalt属性を設定
 
-**ARIA とフォーカス管理**
+**ARIAとフォーカス管理**
 
-- ネイティブ HTML で足りない場合にのみ ARIA を使用
-- aria-expanded, aria-live, aria-current で動的状態を通知
-- tabindex は 0 と -1 のみ使用。正の値は避ける
-- モーダルにはフォーカストラップと Escape での閉じを実装
+- ネイティブHTMLで足りない場合にのみARIAを使用
+- aria-expanded, aria-live, aria-currentで動的状態を通知
+- tabindexは0と -1のみ使用。正の値は避ける
+- モーダルにはフォーカストラップとEscapeでの閉じを実装
 
 **参考リンク**
 
-- [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) -- ARIA のパターンとプラクティスの公式ガイド
-- [MDN - ARIA](https://developer.mozilla.org/ja/docs/Web/Accessibility/ARIA) -- ARIA の包括的なリファレンス
-- [WCAG 2.2 日本語訳](https://waic.jp/translations/WCAG22/) -- Web コンテンツアクセシビリティガイドライン
-- [axe-core/react](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/react) -- React アプリのアクセシビリティ自動チェックライブラリ
+- [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) -- ARIAのパターンとプラクティスの公式ガイド
+- [MDN - ARIA](https://developer.mozilla.org/ja/docs/Web/Accessibility/ARIA) -- ARIAの包括的なリファレンス
+- [WCAG 2.2日本語訳](https://waic.jp/translations/WCAG22/) -- Webコンテンツアクセシビリティガイドライン
+- [axe-core/react](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/react) -- Reactアプリのアクセシビリティ自動チェックライブラリ
