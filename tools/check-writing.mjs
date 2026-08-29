@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-// クリシェ検査の結果を JSON で受け取り、しきい値で判定する。
-// 表示文言の一致で判定すると上流の文言変更で壊れるため、件数で判定する。
-// 既定は error のみ失敗。--strict で warn/info も失敗にする。
+// クリシェ検査。判定は ux-writing-dead-cliche の終了コードに委ねる。
+//   既定       : warn 以上で失敗
+//   --strict   : info も含めて失敗 (このリポジトリの基準)
+// 表示文言は予告なく変わるため、文言での判定はしない (上流 README の出力契約)。
+// CLI はグロブもディレクトリも展開しないので、対象ファイルはここで集める。
 import { execFileSync } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
@@ -9,7 +11,6 @@ import { join, extname } from "node:path";
 const strict = process.argv.includes("--strict");
 const cli = process.env.DEAD_CLICHE_CLI || "github:BoxPistols/ux-writing-dead-cliche";
 
-// CLI はグロブもディレクトリも展開しないため、対象ファイルを自分で集める
 function collect(dir, out = []) {
   for (const e of readdirSync(dir)) {
     const p = join(dir, e);
@@ -21,39 +22,16 @@ function collect(dir, out = []) {
 const targets = [...collect("articles"), ...collect("books")].sort();
 if (targets.length === 0) { console.error("対象ファイルがありません"); process.exit(2); }
 
-let raw;
+const flags = strict ? ["--strict"] : [];
+const isLocal = cli.endsWith(".mjs");
+const bin = isLocal ? "node" : "npx";
+const args = isLocal ? [cli, "check", ...flags, ...targets] : ["--yes", cli, "check", ...flags, ...targets];
+
+console.log(`検査対象: ${targets.length} ファイル${strict ? " (--strict: info も失敗条件)" : ""}`);
 try {
-  const args = cli.endsWith(".mjs")
-    ? [cli, "check", "--format", "json", ...targets]
-    : ["--yes", cli, "check", "--format", "json", ...targets];
-  const bin = cli.endsWith(".mjs") ? "node" : "npx";
-  raw = execFileSync(bin, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  execFileSync(bin, args, { stdio: "inherit", maxBuffer: 64 * 1024 * 1024 });
 } catch (e) {
-  // 検出があると exit 1 になるため、stdout は取り出せる
-  raw = e.stdout || "";
-  if (!raw) { console.error("検査コマンドを実行できませんでした"); process.exit(2); }
+  console.error("注記: 辞書にある既知のパターンの有無だけを見ています。検出ゼロは文章の質を保証しません");
+  process.exit(e.status ?? 1);
 }
-
-const start = raw.indexOf("{");
-if (start === -1) { console.error("JSON を取得できませんでした:\n" + raw.slice(0, 500)); process.exit(2); }
-const data = JSON.parse(raw.slice(start));
-
-const all = data.results.flatMap((r) => r.violations.map((v) => ({ ...v, file: r.file })));
-const bySeverity = { error: 0, warn: 0, info: 0 };
-for (const v of all) bySeverity[v.severity] = (bySeverity[v.severity] ?? 0) + 1;
-
-for (const v of all) {
-  console.log(`${v.severity} ${v.file}:${v.line ?? "?"} [${v.ruleId}] 「${v.matched}」`);
-}
-console.log(
-  `検査: ${data.results.length} ファイル / 検出 ${data.total} 件 ` +
-    `(error ${bySeverity.error} / warn ${bySeverity.warn} / info ${bySeverity.info})`
-);
-console.log("注記: 辞書にある表現の有無だけを見ています。検出ゼロは文章の質を保証しません");
-
-const fail = strict ? data.total : bySeverity.error;
-if (fail > 0) {
-  console.error(strict ? "検出があるため失敗 (--strict)" : "error 級の検出があるため失敗");
-  process.exit(1);
-}
-process.exit(0);
+console.log("注記: 辞書にある既知のパターンの有無だけを見ています。検出ゼロは文章の質を保証しません");
