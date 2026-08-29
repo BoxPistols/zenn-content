@@ -14,7 +14,7 @@ published: true
 
 ## 推奨: リポジトリ自動検出版
 
-シェル関数を設定すれば、リポジトリ情報を手動指定する必要がなくなります：
+シェル関数を設定すれば、リポジトリ情報を手動指定する必要がなくなります。
 
 ```bash
 # 1. インストール
@@ -92,7 +92,7 @@ GitHubのIssueやPRに付けるラベル、チームやプロジェクトで統�
 - ドライランで変更をプレビュー
 - 複数リポジトリへの一括同期
 - GitHub Actionsで自動化
-- **リポジトリ情報の自動検出**（`--owner` / `--repo` 指定不要）
+- リポジトリ情報の自動検出（`--owner` / `--repo` 指定不要）
 
 ## 推奨される使い方
 
@@ -139,7 +139,7 @@ labels-config --version
 
 ## Step 3: シェル関数を設定（推奨）
 
-リポジトリ情報を自動検出できるようにします：
+リポジトリ情報を自動検出できるようにします。
 
 ```bash
 # ~/.zshrc（または ~/.bashrc）に追加
@@ -170,7 +170,7 @@ source ~/.zshrc
 ```
 
 :::details シェル関数を使わない場合
-以下のようにコマンド置換で直接実行することもできます：
+以下のようにコマンド置換で直接実行することもできます。
 ```bash
 REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 OWNER=$(echo $REPO | cut -d'/' -f1)
@@ -181,14 +181,14 @@ labels-config sync --owner $OWNER --repo $REPO_NAME --file labels.json
 
 ## Step 4: ラベル設定ファイルを作成
 
-プロジェクトディレクトリに移動して、テンプレートから設定ファイルを生成します：
+プロジェクトディレクトリに移動して、テンプレートから設定ファイルを生成します。
 
 ```bash
 cd ~/projects/my-project
 labels-config init prod-ja --file labels.json
 ```
 
-これで `labels.json` が作成されます。中身を確認します：
+これで `labels.json` が作成されます。中身を確認します。
 
 ```bash
 cat labels.json
@@ -693,7 +693,7 @@ labels-config export --owner myorg --repo myrepo --output exported-labels.json
 
 ## カテゴリ分け形式
 
-ラベルをカテゴリごとに整理することもできます：
+ラベルをカテゴリごとに整理することもできます。
 
 ```json
 {
@@ -990,7 +990,7 @@ source ~/.bashrc
 
 # ライブラリとしての使用
 
-Node.jsプロジェクト内でプログラマティックに使用することもできます：
+Node.jsプロジェクト内でプログラマティックに使用することもできます。
 
 ```typescript
 import { GitHubLabelSync } from '@asagiri-design/labels-config/github'
@@ -1017,23 +1017,23 @@ npm install @asagiri-design/labels-config
 
 `@asagiri-design/labels-config` を使えば：
 
-- **ラベル設定をコードで管理**できる
-- **テンプレートから簡単に**始められる
-- **ドライランで安全に**変更を確認できる
-- **GitHub Actionsで自動化**できる
-- **複数リポジトリに一括同期**できる
+- ラベル設定をコードで管理できる
+- テンプレートから始められる
+- ドライランで変更を事前確認できる
+- GitHub Actionsで自動化できる
+- 複数リポジトリに一括同期できる
 
 さらに、シェル関数を使った自動リポジトリ検出により：
 
-- **プロジェクトディレクトリで即座に実行**できる
-- **owner/repo の手動指定が不要**になる
-- **複数プロジェクト間の移動がスムーズ**になる
+- プロジェクトディレクトリでそのまま実行できる
+- owner/repo の手動指定が不要になる
+- 複数プロジェクト間を移動しても指定し直しが要らなくなる
 
 GitHub CLIの認証をそのまま使えるので、トークン管理の手間もありません。
 
 基本的な使い方から、ワークフローを改善する便利な設定まで、プロジェクトの規模や用途に合わせて選択できます。
 
-ぜひチーム開発のラベル管理に活用してみてください！
+チーム開発に導入する場合は、まず 1 つのリポジトリでテンプレートから `labels.json` を作り、ドライランで差分を確認するところから始めてください。
 
 ---
 
