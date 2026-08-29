@@ -151,7 +151,7 @@ npm install
 npm run build
 ```
 
-1. Chrome で `chrome://extensions` を開く
+1. Chromeで `chrome://extensions` を開く
 2. 「デベロッパーモード」をオンにする
 3. 「パッケージ化されていない拡張機能を読み込む」をクリック
 4. ビルドされた `dist/` フォルダを選択

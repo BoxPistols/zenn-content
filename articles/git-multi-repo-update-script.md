@@ -216,7 +216,7 @@ done < <(find "$BASE_DIR" -maxdepth 2 -type d -name .git -prune -print0)
 | Linux (Ubuntu等) | ✅ |
 | Windows WSL2 (Ubuntu) | ✅ |
 
-※ Bash 4.x 以上を推奨。絵文字表示にはUTF-8対応のターミナルが必要です。
+※ Bash 4.x以上を推奨。絵文字表示にはUTF-8対応のターミナルが必要です。
 
 ## 注意点
 

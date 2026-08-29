@@ -1,5 +1,5 @@
 ---
-title: "Web 開発の実践リファレンス「Dev Album」を公開した"
+title: "Web開発の実践リファレンス「Dev Album」を公開した"
 emoji: "📘"
 type: "idea"
 topics: ["react", "nextjs", "frontend", "アクセシビリティ"]
@@ -8,11 +8,11 @@ published: false
 
 ## 概要
 
-**Dev Album** は、Git・React・Claude Code・Three.js の 4 領域を、Web 標準とアクセシビリティの観点を含めて解説する技術マニュアルである。
+**Dev Album** は、Git・React・Claude Code・Three.jsの4領域を、Web標準とアクセシビリティの観点を含めて解説する技術マニュアルである。
 
 https://dev-album.vercel.app
 
-![Dev Album トップページ](スクショURL_1)
+![Dev Albumトップページ](スクショURL_1)
 
 無料・アカウント不要。ブラウザのみで利用可能。
 
@@ -20,11 +20,11 @@ https://dev-album.vercel.app
 
 ## 背景
 
-W3Schools の構成を参考に、以下の方針で構築した。
+W3Schoolsの構成を参考に、以下の方針で構築した。
 
-- **Web 標準の観点を含める**: セマンティック HTML、ARIA、WCAG 準拠など、コードの書き方と同時に品質面も扱う
-- **領域を横断する**: Git の環境構築から React のコンポーネント設計、デプロイ、チーム開発までの流れを一本で辿れる構成にした
-- **コードを書いて確認できる**: 静的なコード表示ではなく、ライブプレビュー付きのエディタで実行結果を即座に確認できる
+- Web標準の観点を含める: セマンティックHTML、ARIA、WCAG準拠など、コードの書き方と同時に品質面も扱う
+- 領域を横断する: Gitの環境構築からReactのコンポーネント設計、デプロイ、チーム開発までの流れを一本で辿れる構成にした
+- コードを書いて確認できる: 静的なコード表示ではなく、ライブプレビュー付きのエディタで実行結果を即座に確認できる
 
 ---
 
@@ -32,7 +32,7 @@ W3Schools の構成を参考に、以下の方針で構築した。
 
 ### Git / GitHub
 
-Git の基本操作、ブランチ戦略、GitHub PR 運用、AI エージェント連携を扱う。環境構築から解説している。
+Gitの基本操作、ブランチ戦略、GitHub PR運用、AIエージェント連携を扱う。環境構築から解説している。
 
 ### React / TypeScript / Next.js
 
@@ -41,15 +41,15 @@ Git の基本操作、ブランチ戦略、GitHub PR 運用、AI エージェン
 - React 19 + TypeScript
 - Next.js 15 App Router / Server Components
 - CSS Modules / Tailwind / MUI / styled-components
-- Storybook（Figma 連携・Chromatic）
+- Storybook（Figma連携・Chromatic）
 - Flexbox / CSS Grid
-- Dialog・Snackbar・Form の設計パターン
-- セマンティック HTML・ARIA・Table 設計
+- Dialog・Snackbar・Formの設計パターン
+- セマンティックHTML・ARIA・Table設計
 - ダークパターン回避と技術倫理
 
 ### Claude Code & 開発環境
 
-Claude Code CLI、MCP サーバー、Agent Teams、tmux、Hooks、CI/CD を扱う。
+Claude Code CLI、MCPサーバー、Agent Teams、tmux、Hooks、CI/CDを扱う。
 
 ### Three.js / React Three Fiber
 
@@ -61,17 +61,17 @@ Claude Code CLI、MCP サーバー、Agent Teams、tmux、Hooks、CI/CD を扱�
 
 ### ライブコードエディタ
 
-左ペインにコードエディタ、右ペインにリアルタイムプレビューを配置している。Sucrase によるブラウザ内 JSX トランスパイルで、環境構築なしにコードの実行結果を確認できる。
+左ペインにコードエディタ、右ペインにリアルタイムプレビューを配置している。Sucraseによるブラウザ内JSXトランスパイルで、環境構築なしにコードの実行結果を確認できる。
 
 ![コードエディタとプレビューの左右分割](スクショURL_2)
 
-シンタックスハイライト付き。Tab / Shift+Tab でインデント操作に対応。
+シンタックスハイライト付き。Tab / Shift+Tabでインデント操作に対応。
 
-### 3D プレビュー
+### 3Dプレビュー
 
-Three.js セクションでも同様の左右分割レイアウトを採用。コードの横で 3D シーンをドラッグ回転・ズームできる。
+Three.jsセクションでも同様の左右分割レイアウトを採用。コードの横で3Dシーンをドラッグ回転・ズームできる。
 
-![Three.js の3Dプレビュー](スクショURL_3)
+![Three.jsの3Dプレビュー](スクショURL_3)
 
 ### コーディングチャレンジ
 
@@ -79,35 +79,35 @@ Three.js セクションでも同様の左右分割レイアウトを採用。�
 
 ![コーディングチャレンジ](スクショURL_4)
 
-### UI トレーニング
+### UIトレーニング
 
-Flexbox の中央寄せからレスポンシブナビゲーションまで、40 問の HTML/CSS/JS チャレンジを 4 レベルで収録。
+Flexboxの中央寄せからレスポンシブナビゲーションまで、40問のHTML/CSS/JSチャレンジを4レベルで収録。
 
 ---
 
-## Web 標準・アクセシビリティ関連
+## Web標準・アクセシビリティ関連
 
 プログラミングの解説に加え、以下のトピックを独立したセクションで扱っている。
 
 ### アクセシビリティ実践
 
-- セマンティック HTML と ARIA（ランドマーク要素、aria 属性、フォーカス管理）
-- Table 設計の全課題（ellipsis の問題、横スクロール判断、入れ子テーブルの代替案）
-- Form のアクセシビリティ（placeholder 依存の問題、エラーの aria 紐付け）
+- セマンティックHTMLとARIA（ランドマーク要素、aria属性、フォーカス管理）
+- Table設計の全課題（ellipsisの問題、横スクロール判断、入れ子テーブルの代替案）
+- Formのアクセシビリティ（placeholder依存の問題、エラーのaria紐付け）
 
-### UI コンポーネント設計
+### UIコンポーネント設計
 
-- Dialog の多用を避ける理由（フォーカストラップの複雑さ、認知負荷）
-- Snackbar / Toast の配置・タイミング設計
-- Form グループの HTML 構造と課題
+- Dialogの多用を避ける理由（フォーカストラップの複雑さ、認知負荷）
+- Snackbar / Toastの配置・タイミング設計
+- FormグループのHTML構造と課題
 
 ### ダークパターン回避と技術倫理
 
-代表的なダークパターンを NG/OK 比較で解説。Cookie バナー設計、WCAG 2.2、障害者差別解消法との関連を扱う。
+代表的なダークパターンをNG/OK比較で解説。Cookieバナー設計、WCAG 2.2、障害者差別解消法との関連を扱う。
 
-### Storybook と Figma 連携
+### StorybookとFigma連携
 
-Figma のコンポーネントと Storybook Story の対応関係、Controls パネル、デザイントークン、Visual Regression テストを扱う。
+FigmaのコンポーネントとStorybook Storyの対応関係、Controlsパネル、デザイントークン、Visual Regressionテストを扱う。
 
 ![Storybook Controls](スクショURL_5)
 
@@ -120,13 +120,13 @@ Figma のコンポーネントと Storybook Story の対応関係、Controls パ
 | React 19 + TypeScript | UI |
 | Vite | ビルド + HMR |
 | Tailwind CSS | スタイリング |
-| Sucrase | ブラウザ内 JSX トランスパイル |
-| React Three Fiber | 3D プレビュー |
+| Sucrase | ブラウザ内JSXトランスパイル |
+| React Three Fiber | 3Dプレビュー |
 | prism-react-renderer | シンタックスハイライト |
 | wouter | ルーティング |
 | Vercel | ホスティング |
 
-プレビューは `srcDoc` iframe + `sandbox="allow-scripts allow-same-origin"` で分離。CDN は React 18.3.1 UMD、Three.js 0.160.1 UMD を使用（React 19・Three.js 0.161+ は UMD ビルドを廃止しているため）。
+プレビューは `srcDoc` iframe + `sandbox="allow-scripts allow-same-origin"` で分離。CDNはReact 18.3.1 UMD、Three.js 0.160.1 UMDを使用（React 19・Three.js 0.161+ はUMDビルドを廃止しているため）。
 
 ---
 
@@ -138,4 +138,4 @@ Figma のコンポーネントと Storybook Story の対応関係、Controls パ
 
 ![ダークモード対応](スクショURL_6)
 
-フィードバックは GitHub Issue または本記事のコメントで受け付けている。
+フィードバックはGitHub Issueまたは本記事のコメントで受け付けている。
