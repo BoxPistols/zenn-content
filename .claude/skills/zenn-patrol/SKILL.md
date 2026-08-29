@@ -11,20 +11,19 @@ description: zenn-contentの定期巡回。記事の実装乖離 (バージョ�
 ## 1. 機械チェック (CIと同一)
 
 ```bash
-node ~/dev/writing/ux-writing-dead-cliche/src/cli.mjs check articles/*.md books/web-quality-a11y-guide/*.md
-node tools/patrol-links.mjs
-npx zenn list:articles
+npm run ci        # frontmatter/構造の検証 + クリシェ検査 (warn含め0件)
+npm run patrol    # 外部リンク生死 + publishedとZenn実態の整合
 ```
 
-すべて通ること。クリシェはwarn含め0件が基準。
+すべて通ること。落ちた場合は出力のファイル名と行を起点に直す。
+個別に回すなら `npm run validate` / `check:writing` / `check:links` / `check:published`。
 
 ## 2. publishedフラグ × Zenn実態
 
-正準ユーザー名は `ait` (旧and_andはリダイレクト)。全記事について
-`https://zenn.dev/ait/articles/<slug>` のHTTP状態 (200=公開) とfrontmatterの
-`published` を突き合わせる。不整合は方向を明記して報告する。
-Zenn側で手動公開されたのにrepoがfalseのケースは、放置すると次のpushで
-下書きに戻るため優先度高で報告する。修正はユーザー確認後。
+`npm run check:published` が自動判定する (正準ユーザー名は `ait`、旧and_andは
+リダイレクト)。不整合が出たら方向を明記して報告する。Zenn側で手動公開された
+のにrepoがfalseのケースは、放置すると次のpushで下書きに戻るため優先度を上げる。
+repoのフラグ変更はユーザー確認後に行う。
 
 ## 3. 実装・上流との乖離 (紹介記事の鮮度)
 

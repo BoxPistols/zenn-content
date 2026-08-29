@@ -1,27 +1,13 @@
 name: patrol
 
+# 外部の状態に依存する定期巡回。失敗しても記事の内容が壊れているわけではないため、
+# push のたびには回さず週次と手動で回す (決定論的な検査は ci.yml)。
 on:
   schedule:
     - cron: '0 21 * * 5'   # 土曜 06:00 JST
   workflow_dispatch:
-  pull_request:
-    paths: ['articles/**', 'books/**']
 
 jobs:
-  writing:
-    name: クリシェ検査 (paper・warn含め0件)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: dead-cliche check
-        run: |
-          out=$(npx github:BoxPistols/ux-writing-dead-cliche check articles/*.md books/web-quality-a11y-guide/*.md | tail -1)
-          echo "$out"
-          [ "$out" = "検出なし" ] || { echo "warn含め0件の基準に達していません"; exit 1; }
-
   links:
     name: 外部リンク生死 (404/410で失敗)
     runs-on: ubuntu-latest
@@ -31,3 +17,13 @@ jobs:
         with:
           node-version: 22
       - run: node tools/patrol-links.mjs
+
+  published:
+    name: published と Zenn 実態の整合
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/patrol-published.mjs
