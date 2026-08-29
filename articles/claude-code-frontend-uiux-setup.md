@@ -18,15 +18,15 @@ published: true
 
 ## TL;DR - 今すぐ使いたい人向け
 
-**3ステップの設定で、こんなことが実現できます：**
+3ステップの設定で実現できることは次のとおりです。
 
 | 設定 | 実現すること |
 |------|-----------|
-| **1. frontend-designスキル** | 「ボタン作ってください」と指示するだけで、Claude Codeが自動的に**見栄えが良い、プロフェッショナルなUI**を生成。グラスモーフィズム、ニューモーフィズムなど最新デザイントレンドも自動適用 |
-| **2. Figma連携** | Figmaで作ったデザインをClaude Codeで直接参照 → デザイン完全準拠＆見栄えの良いReactコンポーネント自動生成 |
-| **3. CLAUDE.md** | 毎回「React + TypeScript」「このカラーパレットを使って」などの指示の手間をゼロに |
+| 1. frontend-designスキル | UI実装の依頼時に、テンプレート感を避けるデザイン指針(配色・タイポグラフィ・レイアウトの選び方)が自動で適用される |
+| 2. Figma連携 | Figmaで作ったデザイン(カラー・レイアウト・タイポグラフィ)をClaude Codeが直接参照してコンポーネントを実装できる |
+| 3. CLAUDE.md | 「React + TypeScript」「このカラーパレットを使って」といった毎回の指示を書かずに済む |
 
-**結果:** 指示するだけで、見栄えが良いプロフェッショナルなUIコンポーネントが自動で完成。デザイナーもエンジニアも「え、これ手動で作ったの？」と言わせるレベルのクオリティが実現できます。
+3つとも設定ファイルの配置だけで済み、以降のUI実装の指示が短くなります。
 
 ---
 
@@ -34,7 +34,7 @@ published: true
 
 #### 1. frontend-designスキルを高速インストール
 
-このスキルがClaude Codeに導入されると、フロントエンド関連のリクエストを検知して、**見栄えの良いプロフェッショナルなUIデザイン**（Glassmorphism、Neumorphism、Bento Grid等の最新トレンド、美しいカラーパレット、洗練されたタイポグラフィなど）を自動的に参照・適用するようになります。
+このスキルを導入すると、フロントエンド関連のリクエストを検知して、テンプレート的なデフォルトデザインを避けるための指針(デザイン計画の立て方、配色・タイポグラフィの選び方、AI生成にありがちな定番の見た目の回避)を自動的に参照するようになります。
 
 ターミナルで以下を実行：
 
@@ -43,17 +43,13 @@ mkdir -p ~/.claude/skills/frontend-design
 curl -o ~/.claude/skills/frontend-design/SKILL.md https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
 ```
 
-→ これ以降、「カードコンポーネントを作ってください」と言うだけで、自動的に**グラフィックデザイン的に美しい、今風のUIが生成**されます。
+これ以降、「カードコンポーネントを作ってください」と言うだけで、このスキルの指針を通した実装になります。
 
-**またはGUI方式（手動が楽な場合）:**
-```bash
-claude /plugin
-# Marketplaces > Browse plugins > frontend-design + figma をインストール
-```
+またはプラグインとして入れる場合は、Claude Code内で `/plugin` を実行し、Marketplaces > Browse pluginsから `frontend-design` をインストールします。
 
 #### 2. Figma Access Tokenを設定
 
-Figma MCP（Model Context Protocol）サーバーをセットアップすることで、Figmaで作ったデザイン（カラー、レイアウト、タイポグラフィなど）をClaude Codeが直接読み込み、**それをそのまま見栄え良くReactコンポーネント化**できるようになります。
+Figma MCP（Model Context Protocol）サーバーをセットアップすることで、Figmaで作ったデザイン（カラー、レイアウト、タイポグラフィなど）をClaude Codeが直接読み込み、Reactコンポーネント化できるようになります。
 
 `~/.claude.json` に追加（なければファイルを新規作成）：
 
@@ -62,7 +58,7 @@ Figma MCP（Model Context Protocol）サーバーをセットアップするこ�
   "mcpServers": {
     "figma": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-figma"],
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
       "env": {
         "FIGMA_API_KEY": "figd_xxxxxxxxxxxx"
       }
@@ -75,7 +71,7 @@ Figma MCP（Model Context Protocol）サーバーをセットアップするこ�
 - Figma → Settings → Account → Personal access tokens
 - 「Generate new token」で新規作成 → `figd_` で始まるトークンをコピー
 
-→ これで「このFigmaのデザインをReactコンポーネントにして」と指示するだけで、Figmaで作ったデザインの見栄えをそのまま実装できるようになります。デザイナーとエンジニアの「見た目のズレ」が完全になくなります。
+これで「このFigmaのデザインをReactコンポーネントにして」と指示すると、Figmaのデザイン値(色・余白・フォント)を参照した実装になります。目視での転記によるズレを減らせます。
 
 #### 3. CLAUDE.mdにプロジェクトのデザイン・スタイルを記載
 
@@ -88,7 +84,7 @@ cat > ~/.claude/CLAUDE.md << 'EOF'
 ### 使用技術
 - React/Next.js + TypeScript
 - Tailwind CSS + MUI
-- Storybook 8
+- Storybook
 
 ### デザイン原則（見た目の統一）
 - カラーパレット: [プロジェクトのメインカラー・サブカラー指定]
@@ -102,7 +98,7 @@ cat > ~/.claude/CLAUDE.md << 'EOF'
 EOF
 ```
 
-→ 以降、単に「ボタンコンポーネント作ってください」とだけ指示すれば、自動的に上記デザイン方針が適用され、見栄えの統一がされます。
+以降、単に「ボタンコンポーネント作ってください」とだけ指示すれば、上記のデザイン方針が適用されます。
 
 ---
 
@@ -129,7 +125,7 @@ Claude Codeの設定は以下のディレクトリに集約されます。
 - Next.js 15 (App Router)
 - TypeScript 5.x
 - MUI 7 + Tailwind CSS 4
-- Storybook 8
+- Storybook
 
 ## コーディング規約
 - コンポーネントは関数コンポーネント + TypeScript
@@ -144,16 +140,15 @@ Claude Codeの設定は以下のディレクトリに集約されます。
 
 ### 音声通知 - 長い処理の完了を見逃さない
 
-Claude Codeが応答したときに音を鳴らす設定です。
+Claude Codeが応答を終えたときに音を鳴らす設定です(macOSの場合)。
 
 `~/.claude/settings.json`:
 
 ```json
 {
   "hooks": {
-    "PostToolUse": [
+    "Stop": [
       {
-        "matcher": ".*",
         "hooks": [
           {
             "type": "command",
@@ -166,21 +161,13 @@ Claude Codeが応答したときに音を鳴らす設定です。
 }
 ```
 
+`PostToolUse`に付けるとツールを使うたびに鳴って耳障りなので、応答完了の`Stop`フックを使います。
+
 ### コンテキスト使用率を表示
 
-会話が長くなると自動圧縮され、文脈が失われることがあります。使用率を表示して管理しましょう。
+会話が長くなると自動圧縮され、文脈が失われることがあります。ステータスラインに使用率を出しておくと管理しやすくなります。
 
-Claude Code起動後に `/config` → Statuslineで設定するか、以下のスクリプトを使用：
-
-`~/.claude/statusline.sh`:
-
-```bash
-#!/bin/bash
-PERCENT="${CLAUDE_CONTEXT_WINDOW_PERCENT:-0}"
-if [ "$PERCENT" -ge 80 ]; then
-  echo "CTX:${PERCENT}%"
-fi
-```
+Claude Code内で `/statusline` を実行し、「コンテキスト使用率を表示して」のように要望を伝えると、設定スクリプトを生成して `settings.json` に登録してくれます。ステータスラインのスクリプトはJSON(モデル名・作業ディレクトリ・コンテキスト情報など)を標準入力で受け取る仕組みです。
 
 ---
 
@@ -190,11 +177,11 @@ fi
 
 プロフェッショナルなUI/UX構築のためのスキルです。Claude CodeがUIタスクを検知すると自動的に起動し、最適なデザインリソースを参照します。
 
-**主な機能：**
-- 57種のUIスタイル（Glassmorphism、Neumorphism、Bento Grid等）
-- 95種の業界別カラーパレット
-- 56種のフォントペアリング
-- 98のUXガイドライン
+主な収録内容(2026年8月時点):
+- UIスタイル79種（Glassmorphism、Neumorphism、Bento Grid等）
+- 業界別カラーパレット192種
+- フォントペアリング74種
+- UXガイドライン119件
 
 ### インストール
 
@@ -230,9 +217,7 @@ uipro init --ai claude
 .claude/skills/ui-ux-pro-max/
 ```
 
-複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのパスもすべてignoreする必要があります。`uipro init --ai all` での一括セットアップと `.gitignore` の全パターンについては、以下の記事を参照してください：
-
-👉 [UI/UX PRO MAXクイックスタートガイド - .gitignoreの設定](https://zenn.dev/and_and/articles/ui-ux-pro-max-quickstart#.gitignore-%E3%81%AE%E8%A8%AD%E5%AE%9A)
+複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのインストール先もすべてignoreする必要があります。`uipro init --ai all` での一括セットアップと環境別のインストール先一覧は、[UI/UX PRO MAXクイックスタートガイド](https://zenn.dev/and_and/articles/ui-ux-pro-max-quickstart)を参照してください。
 :::
 
 ### 使い方
@@ -305,7 +290,7 @@ MUIコンポーネントのドキュメントを正確に参照できます。
   "mcpServers": {
     "mui": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-mui"]
+      "args": ["-y", "@mui/mcp"]
     }
   }
 }
@@ -320,7 +305,7 @@ MUIコンポーネントのドキュメントを正確に参照できます。
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-playwright"]
+      "args": ["-y", "@playwright/mcp"]
     }
   }
 }
@@ -409,12 +394,9 @@ curl -o ~/.claude/skills/frontend-design/SKILL.md \
   https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/frontend-design/skills/frontend-design/SKILL.md
 ```
 
-**方式2: GUIプラグインマーケットプレイス**
+**方式2: プラグインマーケットプレイス**
 
-```bash
-claude /plugin
-# Marketplaces > Browse plugins (45) から検索してインストール
-```
+Claude Code内で `/plugin` を実行し、Marketplaces > Browse pluginsから検索してインストールします。
 
 ### TL;DRで推奨する主要プラグイン
 
@@ -432,30 +414,21 @@ ls ~/.claude/skills/frontend-design/SKILL.md
 # ファイルが存在すれば OK
 ```
 
-#### 2. figmaプラグイン / MCP（優先度: 高）
+#### 2. Figma MCP（優先度: 高）
 
-**機能:**
-- Figma MCPサーバーを統合（TL;DR Step 2で設定）
-- Figmaデザインファイルの直接参照
-- デザイン → コンポーネント自動生成
-- リアルタイムデザイン更新対応
+機能:
+- Figmaデザインファイルの直接参照（TL;DR Step 2で設定）
+- デザイン値(カラー・レイアウト・タイポグラフィ)の取得とコンポーネント実装への反映
 
-**設定済みの確認:**
+設定済みの確認:
 ```bash
-cat ~/.claude.json | grep -A 5 "figma"
+grep -A 5 '"figma"' ~/.claude.json
 # mcpServers.figma が設定されていれば OK
 ```
 
 ### プラグイン有効化確認
 
-インストール後、Claude Codeを再起動してプラグインを認識させます。
-
-```bash
-claude /plugin
-# Installed タブで以下が表示されることを確認
-#   - frontend-design
-#   - figma
-```
+インストール後、Claude Codeを再起動してから `/plugin` のInstalledタブで `frontend-design` が表示されることを確認します。Figma連携はプラグインではなくMCPサーバーなので、`/mcp` で `figma` の接続状態を確認します。
 
 ### 実装例
 
@@ -472,10 +445,7 @@ claude /plugin
 - ダークモード対応
 ```
 
-**結果:**
-- `frontend-design` プラグインがUI/UXガイドラインを自動参照
-- `figma` MCPがFigmaデザイン仕様を適用
-- アクセシビリティ対応のプロダクション品質コンポーネント生成
+この依頼で、`frontend-design` がデザイン指針を、Figma MCPがデザイン値を参照した上で、要件のアクセシビリティ項目を満たすコンポーネントが実装されます。
 
 ### Installedプラグイン管理
 
@@ -496,35 +466,18 @@ claude /plugin
 
 フロントエンド・UI/UXデザイナー向け：
 
-| プラグイン | 用途 | 優先度 |
+| 導入するもの | 用途 | 入手経路 |
 |-----------|------|--------|
-| **frontend-design** | UI/UX実装ガイダンス | ⭐ 最優先 |
-| **figma** | Figmaデザイン連携（MCP + Skills） | ⭐ 最優先 |
-| pr-review-toolkit | コードレビュー・品質確認 | 推奨 |
-| accessibility-checker | WCAG準拠確認 | 推奨 |
+| frontend-design | UI/UX実装ガイダンス | 公式marketplaceのプラグイン |
+| Figma連携 | Figmaデザイン参照 | MCPサーバー (`figma-developer-mcp`) |
+| pr-review-toolkit | コードレビュー・品質確認 | 公式marketplaceのプラグイン |
 
-**インストール手順：**
-```bash
-claude /plugin
-# Marketplaces > Browse plugins (45) を開く
-# 上記の「⭐ 最優先」の2つを検索してインストール
-```
+プラグインは `/plugin` のMarketplaces > Browse pluginsから検索してインストールします。
 :::
 
 ### プラグインの自動更新設定
 
-Marketplacesから自動更新を有効化：
-
-```
-/plugin > Marketplaces > claude-plugins-official
-  ✓ Auto-update enabled
-    (Claude Codeが定期的にプラグインを更新)
-```
-
-**最終更新確認例：**
-```
-Updated 2026/1/14
-```
+`/plugin` のMarketplacesで各marketplaceの自動更新(Auto-update)を有効にすると、Claude Codeが定期的にプラグインを更新します。
 
 ---
 
@@ -663,10 +616,7 @@ https://www.figma.com/design/xxxxx/ProjectName?node-id=123-456
 - WCAG 2.1 AA準拠
 ```
 
-**プラグインの自動ガイダンス**：
-- `frontend-design`: UI/UXガイドライン、ベストプラクティスを自動参照
-- `figma`: Figmaデザイン仕様を直接参照 → コンポーネント実装へ
-- 結果：デザイン完全準拠 + アクセシビリティ対応のコンポーネントが生成
+この構成では、`frontend-design` がデザイン指針を、Figma MCPがデザイン値を参照し、要件に沿ったコンポーネントを実装します。
 
 ---
 
@@ -690,9 +640,9 @@ TL;DR3ステップ
   ↓
 基本設定完了
   ↓
-プラグイン自動ガイダンス + Figma連携
+プラグインのガイダンス + Figma連携
   ↓
-デザイン完全準拠の高品質UI実装
+デザイン値を参照したUI実装
   ↓
 Storybook/Chromaticで品質確認
 ```
@@ -700,7 +650,7 @@ Storybook/Chromaticで品質確認
 ### 推奨セットアップ（優先度順）
 
 **必須（TL;DR）:**
-1. `claude /plugin` でfrontend-design + figmaプラグインをインストール
+1. frontend-designスキルをインストール (curlまたは `/plugin`)
 2. Figma APIキーを `~/.claude.json` に設定
 3. `~/.claude/CLAUDE.md` でフロントエンド開発ルール定義
 
@@ -709,7 +659,7 @@ Storybook/Chromaticで品質確認
 5. Storybook/Playwright MCP設定
 6. 自動承認設定で ワークフロー効率化
 
-フロントエンド・UI/UX開発において、**TL;DRの3ステップだけで効果を実感**でき、その後段階的に高度な設定を追加できます。
+まずTL;DRの3ステップを入れて動きを確かめ、その後段階的に残りの設定を足していくのが導入しやすい順序です。
 
 ## 参考リンク
 
