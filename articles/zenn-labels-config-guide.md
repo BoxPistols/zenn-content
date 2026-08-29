@@ -1,5 +1,5 @@
 ---
-title: "GitHubラベル管理を自動化！labels-configでチーム開発を効率化する"
+title: "labels-configでGitHubラベル設定をコード管理する"
 emoji: "🏷️"
 type: "tech"
 topics: ["github", "cli", "nodejs", "npm", "開発効率化"]
