@@ -217,7 +217,7 @@ uipro init --ai claude
 .claude/skills/ui-ux-pro-max/
 ```
 
-複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのインストール先もすべてignoreする必要があります。`uipro init --ai all` での一括セットアップと環境別のインストール先一覧は、[UI/UX PRO MAXクイックスタートガイド](https://zenn.dev/and_and/articles/ui-ux-pro-max-quickstart)を参照してください。
+複数のAIツール（Cursor、Codex、Antigravity等）でも使う場合は、各ツールのインストール先もすべてignoreする必要があります。`uipro init --ai all` での一括セットアップと環境別のインストール先一覧は、[UI/UX PRO MAXクイックスタートガイド](https://zenn.dev/ait/articles/ui-ux-pro-max-quickstart)を参照してください。
 :::
 
 ### 使い方

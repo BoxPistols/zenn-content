@@ -3,7 +3,7 @@ title: "自治体が公開した800件近いAIプロンプト集を、誰でも�
 emoji: "🏛️"
 type: "tech"
 topics: ["react", "生成AI", "プロンプト", "自治体DX", "オープンデータ"]
-published: false
+published: true
 ---
 
 ## はじめに
