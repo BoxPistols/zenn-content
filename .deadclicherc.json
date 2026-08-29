@@ -1,0 +1,5 @@
+{
+  "preset": "paper",
+  "disable": ["formatting/jp-en-space"],
+  "overrides": { "formatting/broken-emphasis": "warn" }
+}

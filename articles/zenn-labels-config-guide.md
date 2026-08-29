@@ -188,7 +188,7 @@ cd ~/projects/my-project
 labels-config init prod-ja --file labels.json
 ```
 
-これで `labels.json` が作成されます。中身を確認してみましょう：
+これで `labels.json` が作成されます。中身を確認します：
 
 ```bash
 cat labels.json
