@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "validate": "node tools/validate-content.mjs",
-    "check:writing": "node ~/dev/writing/ux-writing-dead-cliche/src/cli.mjs check articles/*.md books/*/*.md",
+    "check:writing": "node tools/check-writing.mjs --strict",
     "check:links": "node tools/patrol-links.mjs",
     "check:published": "node tools/patrol-published.mjs",
     "guard:unpublish": "node tools/guard-unpublish.mjs",
