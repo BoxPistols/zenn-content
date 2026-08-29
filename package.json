@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "validate": "node tools/validate-content.mjs",
+    "check:writing": "node ~/dev/writing/ux-writing-dead-cliche/src/cli.mjs check articles/*.md books/*/*.md",
+    "check:links": "node tools/patrol-links.mjs",
+    "check:published": "node tools/patrol-published.mjs",
+    "guard:unpublish": "node tools/guard-unpublish.mjs",
+    "ci": "npm run validate && npm run check:writing",
+    "patrol": "npm run check:links && npm run check:published",
+    "preview": "zenn preview"
   },
   "keywords": [],
   "author": "",
