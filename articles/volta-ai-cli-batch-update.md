@@ -14,6 +14,10 @@ GitHub Copilot CLI、Gemini CLI、Claude Code。2025年以降、ターミナル�
 
 この記事では、Voltaで管理している3つのAI CLIツールをワンコマンドで一括アップデートする方法を紹介します。
 
+:::message
+筆者はその後、この3つのCLIをVolta管理から外してpnpmグローバル管理に移しました。経緯と移行手順は記事末尾の「追記」にあります。Voltaで管理し続ける場合の手順が本編です。
+:::
+
 ## こんな人向け
 
 - VoltaでNode.jsのツール管理をしている
@@ -93,10 +97,11 @@ alias update-ai='volta install @github/copilot@latest && volta install @google/g
 
 ### セットアップ
 
+下の「スクリプト全文」を `~/bin/update-ai-tools` として保存し、実行権限とPATHを設定します。
+
 ```bash
-# スクリプトを配置
 mkdir -p ~/bin
-curl -o ~/bin/update-ai-tools https://gist.githubusercontent.com/your-account/xxxxx/raw/update-ai-tools
+# スクリプト全文を ~/bin/update-ai-tools に保存してから:
 chmod +x ~/bin/update-ai-tools
 
 # PATHに追加（.zshrcに記述）
@@ -360,9 +365,9 @@ TOOLS=(
 - ワンライナーならalias 1行、細かく制御したいならスクリプト版
 - aliasは `.zshrc` に、スクリプト版は `~/bin` に置いてPATHを通せば `update-ai` 一発で最新化できる
 
-## 追記26-06-29 Gemini / Claude Code / GitHub Copilotをvolta管轄から外す手順
+## 追記 (2026-06-29): 3つのCLIをVolta管理から外した
 
-volta管理はあまり運用が良くないため、voltaを剥がします
+運用してみるとVolta経由の管理は更新が遅れがちで、この3つはリリース頻度が高いため、pnpmグローバル管理へ移しました。以下はその移行手順です
 
 volta本体（nodeツールチェーン管理）は残したまま、以下3つのCLIだけをvoltaから外し、pnpmグローバル管理に移す。
 
@@ -370,14 +375,14 @@ volta本体（nodeツールチェーン管理）は残したまま、以下3つ�
 - Gemini CLI  … `@google/gemini-cli`（実パッケージ名に合わせる）
 - GitHub Copilot CLI … `@github/copilot`（実パッケージ名に合わせる）
 
-## 0. 現状確認
+### 0. 現状確認
 
 ```bash
 volta list all                       # volta 管理下の一覧を控える
 which -a claude gemini copilot       # 各実体のパス
 ```
 
-## 1. voltaから3つをアンインストール
+### 1. voltaから3つをアンインストール
 
 ```bash
 volta uninstall @anthropic-ai/claude-code
@@ -387,7 +392,7 @@ volta uninstall @github/copilot
 
 これで `~/.volta/bin` 配下の該当シムが消える。
 
-## 2. pnpmグローバルで入れ直す
+### 2. pnpmグローバルで入れ直す
 
 ```bash
 pnpm add -g @anthropic-ai/claude-code
@@ -395,7 +400,7 @@ pnpm add -g @google/gemini-cli
 pnpm add -g @github/copilot
 ```
 
-## 3. PATH解決の確認
+### 3. PATH解決の確認
 
 ```bash
 which claude    # → ~/Library/pnpm/claude （volta でないこと）
@@ -408,7 +413,7 @@ claude --version
 `~/.zshrc` で `~/Library/pnpm` をvoltaより前に置くか、
 volta側シムが残っていないか（手順1の取りこぼし）を確認する。
 
-## 4. 今後の更新運用
+### 4. 今後の更新運用
 
 この3つはpnpmで更新する（`volta install` は使わない）:
 
@@ -418,8 +423,7 @@ pnpm update -g @anthropic-ai/claude-code @google/gemini-cli @github/copilot
 
 node / その他ツールは引き続きvoltaで管理。
 
-## メモ
+### メモ
 - volta uninstall = volta管理対象から除外（shim削除）。
 - 同名ツールがpnpmとvolta両方に残るとPATH順で挙動が変わるため、
   手順3の `which` 確認は必須。
-```
