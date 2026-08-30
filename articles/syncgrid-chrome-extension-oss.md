@@ -3,7 +3,7 @@ title: "Chromeの新規タブをSpeed Dialに置き換えるOSS「syncgrid」を
 emoji: "⚡"
 type: "tech"
 topics: ["chrome拡張機能", "react", "typescript", "vite", "oss"]
-published: false
+published: true
 ---
 
 ## はじめに

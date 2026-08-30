@@ -3,7 +3,7 @@ title: "AI日本語の「クリシェ」を握りつぶすOSSを作った — �
 emoji: "🖋️"
 type: "tech"
 topics: ["claudecode", "textlint", "ai", "uxwriting", "oss"]
-published: false
+published: true
 ---
 
 ## 何を作ったか
