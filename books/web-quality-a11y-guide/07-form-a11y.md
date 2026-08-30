@@ -98,13 +98,18 @@ function EmailField() {
 `aria-errormessage` は `aria-invalid="true"` の時だけ読み上げられるエラー専用属性である。ただしスクリーンリーダー対応がまだ不完全な場合がある。確実を期すなら `aria-describedby` + `role="alert"` を推奨する。
 
 ```tsx
-<input
-  type="password"
-  id="password"
-  aria-invalid={hasError ? 'true' : undefined}
-  aria-errormessage={hasError ? 'password-error' : undefined}
-/>
+<>
+  <input
+    type="password"
+    id="password"
+    aria-invalid={hasError ? 'true' : undefined}
+    aria-errormessage={hasError ? 'password-error' : undefined}
+  />
+  {hasError && <p id="password-error">{errorText}</p>}
+</>
 ```
+
+参照先の要素が存在しないとこの属性は無視される。`hidden`属性や `display: none` で隠した要素を指しても読み上げられない。
 
 ### エラーサマリー
 
