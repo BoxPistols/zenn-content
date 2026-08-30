@@ -3,7 +3,7 @@ title: "ブラウザからOpenAI APIを直接呼ぶと無効キーの401が読�
 emoji: "🌐"
 type: "tech"
 topics: ["openai", "cors", "javascript", "fetch", "api"]
-published: false
+published: true
 ---
 
 ## この記事の内容
@@ -163,7 +163,7 @@ if (!res.ok) {
 
 ## 続けて踏む400
 
-CORSを抜けた先で、gpt-5系のパラメータ制約に当たります。合わせて挙げておきます。
+CORSを抜けた先で、gpt-5系のパラメータ制約に当たります。合わせて挙げておきます。ここから下の3点は[公式リファレンス](https://developers.openai.com/api/docs/api-reference/chat/create)の記載と報告例によるもので、この記事の他の箇所と違って手元での実測ではありません。
 
 - `max_tokens` は400で拒否されます。`max_completion_tokens` に変えます。旧来のサンプルコードをそのまま持ってくるとここで止まります。
 - `temperature` も既定値の1以外は400になります。旧実装から値を渡していると同じく落ちます。
