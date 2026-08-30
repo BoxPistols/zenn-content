@@ -4,11 +4,12 @@
   "main": "index.js",
   "scripts": {
     "validate": "node tools/validate-content.mjs",
+    "check:code": "node tools/validate-code-blocks.mjs",
     "check:writing": "node tools/check-writing.mjs --strict",
     "check:links": "node tools/patrol-links.mjs",
     "check:published": "node tools/patrol-published.mjs",
     "guard:unpublish": "node tools/guard-unpublish.mjs",
-    "ci": "npm run validate && npm run check:writing",
+    "ci": "npm run validate && npm run check:code && npm run check:writing",
     "patrol": "npm run check:links && npm run check:published",
     "preview": "zenn preview"
   },
