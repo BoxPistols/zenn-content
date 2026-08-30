@@ -159,6 +159,22 @@ for (const f of readdirSync(ARTICLES_DIR)) {
   validateBody(file, text);
 }
 
+// config.yaml の chapters (文字列の配列) だけを読む。無ければ null
+function parseChapterList(text) {
+  const m = text.match(/^chapters:\s*$/m);
+  if (!m) return null;
+  const rest = text.slice(m.index + m[0].length).split("\n").slice(1);
+  const out = [];
+  for (const line of rest) {
+    const item = line.match(/^\s*-\s*(.+?)\s*$/);
+    if (!item) break;
+    out.push(item[1].replace(/^["']|["']$/g, ""));
+  }
+  return out;
+}
+
+const NUMBERED_CHAPTER_RE = /^\d+\.[a-z0-9_-]+$/;
+
 // --- 本 ---
 let bookCount = 0;
 let chapterCount = 0;
@@ -176,12 +192,34 @@ if (existsSync(BOOKS_DIR)) {
       validateFrontmatter(cfgPath, parseFrontmatter("---\n" + readFileSync(cfgPath, "utf8") + "\n---"), { isBook: true });
     }
 
-    for (const f of readdirSync(dir)) {
-      if (extname(f) !== ".md") continue;
+    // 表紙 (cover.png / cover.jpg、1MB 以内、縦横比 1:1.4 推奨) が無いと Zenn の連携で invalid になる
+    const cover = ["cover.png", "cover.jpg", "cover.jpeg"].map((n) => join(dir, n)).find(existsSync);
+    if (!cover) {
+      err(dir, "表紙 (cover.png または cover.jpg) がありません。Zenn の連携が invalid として弾きます");
+    } else if (statSync(cover).size > 1024 * 1024) {
+      err(cover, `表紙が 1MB を超えています (${Math.trunc(statSync(cover).size / 1024)}KB)`);
+    }
+
+    // チャプターは config.yaml の chapters に列挙するか、ファイル名を N.slug.md にする。
+    // どちらも満たさないファイルは Zenn のデプロイ対象から黙って外れる。
+    const listed = existsSync(cfgPath) ? parseChapterList(readFileSync(cfgPath, "utf8")) : null;
+    const chapterFiles = readdirSync(dir).filter((f) => extname(f) === ".md");
+    if (listed) {
+      for (const slug of listed) {
+        if (!existsSync(join(dir, `${slug}.md`))) err(cfgPath, `chapters に書かれた ${slug} に対応する ${slug}.md がありません`);
+      }
+    }
+
+    for (const f of chapterFiles) {
       chapterCount++;
       const file = join(dir, f);
       const slug = basename(f, ".md");
       if (!CHAPTER_SLUG_RE.test(slug)) err(file, `チャプターの slug（${slug}）が不正です`);
+      if (listed) {
+        if (!listed.includes(slug)) err(file, "config.yaml の chapters に無いため Zenn のデプロイ対象に含まれません");
+      } else if (!NUMBERED_CHAPTER_RE.test(slug)) {
+        err(file, "config.yaml の chapters に列挙するか、ファイル名を「チャプター番号.スラッグ.md」にしてください");
+      }
       validateBody(file, readFileSync(file, "utf8"));
     }
   }
