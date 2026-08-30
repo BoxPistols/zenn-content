@@ -15,25 +15,15 @@ title: "Formのアクセシビリティ"
 
 これらが一つでも欠けると、スクリーンリーダーやキーボード操作のユーザーがフォームを正しく使えなくなる。
 
-## ラベルの必須性
+## 視覚的なラベルが置けない場合
 
-ラベルの紐付けには複数の方法がある。用途に応じて使い分ける。
+`label` と `for` による紐付けは「FormグループのHTML構造と課題」の「labelとinputの紐付け」で扱う。ここでは視覚的なラベルを置けない場合に、ARIAで名前を与える方法を示す。
 
 ```html
-<!-- 方法 1: for 属性で id を指定（最も推奨） -->
-<label for="email">メールアドレス</label>
-<input type="email" id="email" name="email" />
-
-<!-- 方法 2: label で input を囲む（暗黙的な紐付け） -->
-<label>
-  メールアドレス
-  <input type="email" name="email" />
-</label>
-
-<!-- 方法 3: aria-label（視覚的ラベルがない場合） -->
+<!-- aria-label: 視覚的ラベルがない場合 -->
 <input type="search" aria-label="サイト内検索" placeholder="検索..." />
 
-<!-- 方法 4: aria-labelledby（別の要素をラベルとして参照） -->
+<!-- aria-labelledby: 別の要素をラベルとして参照 -->
 <h2 id="billing-title">請求先住所</h2>
 <form aria-labelledby="billing-title">
   <label for="address">住所</label>
@@ -47,11 +37,7 @@ title: "Formのアクセシビリティ"
        inputmode="numeric" />
 ```
 
-:::message alert
-**placeholderはラベルの代替にならない**
-
-`placeholder` は入力のヒントであり、ラベルの代わりにはならない。入力を始めると消えるため、何を入力すべきか分からなくなる。多くのスクリーンリーダーはplaceholderをラベルとして読み上げない。必ず `label` または `aria-label` と併用する。
-:::
+多くのスクリーンリーダーは `placeholder` をラベルとして読み上げない。`label` か `aria-label` を必ず併用する。
 
 ## エラーメッセージの伝達
 
@@ -157,6 +143,14 @@ function FormWithErrorSummary() {
 - `tabIndex={-1}` + `focus()` でプログラム的にフォーカスを移動する
 - 各エラーからフィールドへのアンカーリンクで該当箇所にジャンプできるようにする
 
+:::details理解度チェック: role="alert" の効果
+**問題**: エラーメッセージに `role="alert"` を付ける効果はどれか。
+
+A. 赤色で表示　B. アニメーション付き表示　C. SRが即座に読み上げ　D. コンソールにログ出力
+
+**正解: C** -- ライブリージョンの一種。DOM挿入時にSRが自動的に内容を読み上げる。視覚的変化はなく支援技術向けの情報である。
+:::
+
 ## 必須フィールドの表現
 
 必須フィールドは視覚的な表示とプログラム的な通知の両方が必要である。
@@ -181,40 +175,9 @@ function FormWithErrorSummary() {
 アスタリスク（`*`）だけに頼ってはならない。`required` 属性でブラウザバリデーションを有効にし、`aria-required="true"` でスクリーンリーダーに必須であることを通知する。アスタリスク自体は `aria-hidden="true"` で装飾として扱い、スクリーンリーダーが「アスタリスク」と読み上げないようにする。
 :::
 
-## フィールドのグループ化と説明テキスト
+## ヒントテキストの紐付け
 
-### fieldset / legend
-
-関連するフィールドは `fieldset` と `legend` でグループ化する。特にラジオボタンやチェックボックスのグループには必須である。
-
-```html
-<!-- fieldset + legend でグループ化 -->
-<fieldset>
-  <legend>お届け先住所</legend>
-  <label for="zip">郵便番号</label>
-  <input type="text" id="zip" autocomplete="postal-code" />
-  <label for="city">市区町村</label>
-  <input type="text" id="city" autocomplete="address-level2" />
-</fieldset>
-
-<!-- ラジオボタンには fieldset/legend が必須 -->
-<fieldset>
-  <legend>お支払い方法</legend>
-  <input type="radio" id="credit" name="payment" value="credit" />
-  <label for="credit">クレジットカード</label>
-  <input type="radio" id="bank" name="payment" value="bank" />
-  <label for="bank">銀行振込</label>
-</fieldset>
-
-<!-- div ではスクリーンリーダーがグループを認識できない -->
-<div class="address-group">
-  <h3>お届け先住所</h3>  <!-- これは見出しであってグループ名ではない -->
-  <label for="zip2">郵便番号</label>
-  <input type="text" id="zip2" />
-</div>
-```
-
-### ヒントテキストの紐付け
+関連するフィールドを `fieldset` と `legend` でまとめる方法は「FormグループのHTML構造と課題」の「fieldset + legendの活用」で扱う。ここではフィールド単位の補足をどう伝えるかを示す。
 
 `aria-describedby` でヒントテキストをフィールドに紐付ける。フォーカス時にスクリーンリーダーがラベルの後にヒントを読み上げる。
 
@@ -225,16 +188,6 @@ function FormWithErrorSummary() {
 ```
 
 ## よくあるフォームの課題と問題点
-
-### placeholder依存の危険性
-
-placeholderをラベル代わりに使うパターンは多いが、以下の理由から推奨されない。
-
-1. 入力開始で消えてしまう
-2. デフォルトの薄いグレーがWCAGコントラスト比を満たさない
-3. ブラウザの自動翻訳がplaceholderを翻訳しない場合がある
-
-必ず `label` と併用する。
 
 ### disabled vs readonlyの使い分け
 
@@ -492,6 +445,8 @@ function DynamicPhoneFields() {
 ```
 
 フィールドが追加されたとき、新しいフィールドにフォーカスを移動し、`aria-live="polite"` で件数の変更を通知する。
+
+`key` にインデックスを使うと、削除したときに残ったフィールドの値が入れ替わる。一意なIDを付けて `key` に渡す。
 
 ### バリデーションのタイミング
 
