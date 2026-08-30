@@ -463,39 +463,50 @@ function Modal({ isOpen, onClose, title, children }) {
 モーダルダイアログを開いているとき、Tabキーによるフォーカスがモーダル内に閉じ込められる必要がある。モーダルの外にフォーカスが移動すると、背景要素と意図せず操作してしまう危険がある。
 
 ```tsx
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), ' +
+  'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 function useFocusTrap(ref: RefObject<HTMLElement | null>, isActive: boolean) {
   useEffect(() => {
     if (!isActive || !ref.current) return;
-
     const element = ref.current;
-    const focusableSelector =
-      'a[href], button:not([disabled]), input:not([disabled]), ' +
-      'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key !== 'Tab') return;
 
-      const focusableElements = element.querySelectorAll<HTMLElement>(focusableSelector);
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
+      // 隠れている要素はTab順に入らないので候補から外す
+      const items = Array.from(
+        element.querySelectorAll<HTMLElement>(FOCUSABLE),
+      ).filter((el) => el.checkVisibility({ visibilityProperty: true }));
 
-      // Shift+Tab で最初の要素から逆方向 → 最後の要素に移動
-      if (e.shiftKey && document.activeElement === firstElement) {
+      // 候補が無いときはコンテナ自身(tabIndex={-1})に留める
+      const first = items[0] ?? element;
+      const last = items[items.length - 1] ?? element;
+      const active = document.activeElement;
+
+      if (!element.contains(active)) {
         e.preventDefault();
-        lastElement.focus();
-      }
-      // Tab で最後の要素から順方向 → 最初の要素に移動
-      else if (!e.shiftKey && document.activeElement === lastElement) {
+        first.focus();
+      } else if (e.shiftKey && active === first) {
         e.preventDefault();
-        firstElement.focus();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
       }
     }
 
-    element.addEventListener('keydown', handleKeyDown);
-    return () => element.removeEventListener('keydown', handleKeyDown);
+    // documentに張る。開いた直後はフォーカスがまだモーダルの外にある
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [ref, isActive]);
 }
 ```
+
+`checkVisibility` は引数なしだと `visibility: hidden` の要素を可視と判定する。Tab順に入らない要素を除くには `visibilityProperty` を指定する。
+
+ここで扱っているのはTabキーの折り返しまでである。`inert`属性、Shadow DOM内の要素、iframe、ラジオグループのTab挙動は範囲外で、自前で足していくと分岐が増え続ける。要件が広がるなら保守されている実装(focus-trap、react-aria、@radix-ui/react-dialog)に任せるほうが確実である。
 
 ### Skip Navigationリンク
 
