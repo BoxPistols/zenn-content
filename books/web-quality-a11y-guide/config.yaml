@@ -1,6 +1,16 @@
 title: "Web品質とアクセシビリティ実践ガイド — Dialog・Table・Form・ダークパターン"
-summary: "デザイナーもエンジニアも知るべき、現場で頻出する Web 品質課題の全体像。セマンティック HTML、ARIA、Table 設計、Form 設計、Dialog の多用を避ける理由、ダークパターン回避まで。"
+summary: "デザイナーもエンジニアも知るべき、現場で頻出するWeb品質課題の全体像。セマンティックHTML、ARIA、Table設計、Form設計、Dialogの多用を避ける理由、ダークパターン回避まで。"
 topics: ["アクセシビリティ", "html", "css", "frontend", "ux"]
 published: true
 price: 0
 toc_depth: 2
+chapters:
+  - 01-introduction
+  - 02-semantic-aria
+  - 03-dialog
+  - 04-snackbar
+  - 05-form-structure
+  - 06-table-design
+  - 07-form-a11y
+  - 08-dark-patterns
+  - 09-checklist
