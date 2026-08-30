@@ -384,15 +384,18 @@ function Navigation({ currentPath }: { currentPath: string }) {
 // 適切な例: カスタムウィジェットに role を付ける
 // タブインターフェース
 <div role="tablist" aria-label="設定タブ">
-  <button role="tab" aria-selected={activeTab === 0} aria-controls="panel-0">
+  <button role="tab" id="tab-0" aria-selected={activeTab === 0} aria-controls="panel-0">
     一般
   </button>
-  <button role="tab" aria-selected={activeTab === 1} aria-controls="panel-1">
+  <button role="tab" id="tab-1" aria-selected={activeTab === 1} aria-controls="panel-1">
     通知
   </button>
 </div>
-<div role="tabpanel" id="panel-0" aria-labelledby="tab-0">
+<div role="tabpanel" id="panel-0" aria-labelledby="tab-0" hidden={activeTab !== 0}>
   一般設定の内容...
+</div>
+<div role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden={activeTab !== 1}>
+  通知設定の内容...
 </div>
 
 // alert: 緊急の通知

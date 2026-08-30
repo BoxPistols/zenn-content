@@ -103,7 +103,7 @@ A. div + h3　B. fieldset + legend　C. section + aria-label　D. ul + li
 
 ```html
 <!-- NG --> <label style="display:none">検索</label> <!-- SR からも見えなくなる -->
-<!-- OK --> <label for="search" class="visually-hidden">検索</label>
+<!-- OK --> <label for="search" class="visually-hidden">検索</label><input id="search" type="search" />
 ```
 
 ```css
