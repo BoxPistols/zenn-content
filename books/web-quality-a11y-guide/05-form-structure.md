@@ -139,87 +139,15 @@ const errors: Record<string, string> = {};
 if (!name) errors.name = '氏名は必須です';
 if (email && !/^[^@]+@[^@]+\.[^@]+$/.test(email))
   errors.email = '有効なメールアドレスを入力してください';
-
-<input
-  aria-invalid={!!errors.name}
-  aria-describedby={errors.name ? 'name-err' : undefined}
-/>
-{errors.name && <p id="name-err" role="alert">{errors.name}</p>}
 ```
 
 :::message
 **使い分け**: ネイティブはシンプル向き（デザインカスタマイズ困難）。JSは複雑な条件に対応可能。推奨はJSをメインにしつつ `required` や `type="email"` をセマンティクスとして残す方式。
 :::
 
-## エラー表示のパターン
+エラーの表示方法と支援技術への通知は「Formのアクセシビリティ」の「エラーメッセージの伝達」で扱う。
 
-エラー表示は大きく「インラインエラー」と「エラーサマリー」の2種類がある。いずれもスクリーンリーダーへの通知を考慮したARIA属性の付与が重要である。
-
-### インラインエラー + aria-describedby
-
-各フィールドの直下にエラーを表示する方式。`aria-describedby` でエラーの `id` と入力を紐付けると、SRがフォーカス時にエラーを読み上げる。
-
-```tsx
-<label htmlFor="ie-name">氏名 *</label>
-<input id="ie-name" aria-invalid={!!err} aria-describedby={err ? 'ie-err' : undefined} />
-{err && <p id="ie-err" role="alert">{err}</p>}
-```
-
-### エラーサマリー（フォーム上部にまとめて表示）
-
-```tsx
-function ErrorSummary({ errors }: { errors: Record<string, string> }) {
-  const entries = Object.entries(errors);
-  if (!entries.length) return null;
-  return (
-    <div role="alert" aria-labelledby="err-title">
-      <h3 id="err-title">{entries.length} 件のエラーがあります</h3>
-      <ul>
-        {entries.map(([field, msg]) => (
-          <li key={field}>
-            <a href={`#field-${field}`} onClick={(e) => {
-              e.preventDefault();
-              document.getElementById(`field-${field}`)?.focus();
-            }}>{msg}</a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-```
-
-インラインエラーとサマリーを併用すると、ユーザーの視点に関係なくエラー箇所を把握しやすくなる。`role="alert"` がDOMに追加されるとSRが即座に読み上げる（ライブリージョン）。
-
-## 複雑なフォームパターン
-
-実務では単純なフォームだけでなく、マルチステップ、条件付きフィールド、動的なフィールド追加・削除など、複雑な構造を持つフォームが頻出する。いずれの場合も、`fieldset` + `legend` によるグループ化と `label` の紐付けという基本原則は変わらない。
-
-### マルチステップフォーム
-
-```tsx
-<form>
-  <nav aria-label="フォームの進行状況">
-    <ol>
-      <li aria-current={step === 1 ? 'step' : undefined}>基本情報</li>
-      <li aria-current={step === 2 ? 'step' : undefined}>詳細</li>
-      <li aria-current={step === 3 ? 'step' : undefined}>確認</li>
-    </ol>
-  </nav>
-  {step === 1 && (
-    <fieldset>
-      <legend>基本情報（1/3）</legend>
-      <label htmlFor="ms-name">氏名</label>
-      <input id="ms-name" />
-      <button type="button" onClick={() => setStep(2)}>次へ</button>
-    </fieldset>
-  )}
-</form>
-```
-
-要点: `aria-current="step"` で現在位置をSRに伝える。各ステップは `fieldset` + `legend` でグループ化しステップ番号を含める。「戻る」ボタンを必ず配置する。
-
-### 条件付きフィールド
+## 条件付きフィールド
 
 ```tsx
 <select id="method" value={method} onChange={(e) => setMethod(e.target.value)}>
@@ -233,40 +161,7 @@ function ErrorSummary({ errors }: { errors: Record<string, string> }) {
 )}
 ```
 
-### 動的フォーム（フィールド追加・削除）
-
-```tsx
-{skills.map((skill, i) => (
-  <div key={skill.id}> {/* index ではなく一意 ID を key に */}
-    <label htmlFor={`skill-${i}`}>スキル {i + 1}</label>
-    <input id={`skill-${i}`} value={skill.name} onChange={...} />
-    <button type="button" onClick={() => remove(skill.id)}
-            aria-label={`スキル${i + 1}を削除`}>削除</button>
-  </div>
-))}
-<button type="button" onClick={add}>スキルを追加</button>
-```
-
-`key` にインデックスを使うと、削除時に意図しないフィールドの値が入れ替わる問題が発生する。
-
-## よくある課題と対策
-
-### autocomplete属性
-
-`autocomplete` 属性を正しく設定すると、ブラウザのオートフィル機能がフィールドの用途を正しく認識する。WCAG 2.1の「1.3.5入力目的の特定」は、ユーザーに関する入力フィールドに `autocomplete` を設定することを求めている。
-
-```html
-<input autocomplete="name" />          <!-- 氏名 -->
-<input autocomplete="email" />         <!-- メールアドレス -->
-<input autocomplete="tel" />           <!-- 電話番号 -->
-<input autocomplete="postal-code" />   <!-- 郵便番号 -->
-<input autocomplete="street-address" /> <!-- 住所 -->
-<input type="password" autocomplete="current-password" />
-<input type="password" autocomplete="new-password" />
-<input autocomplete="one-time-code" inputmode="numeric" /> <!-- OTP -->
-```
-
-### パスワードUX
+## パスワードUX
 
 表示/非表示の切り替えと強度インジケーターが重要なUX要素である。
 
@@ -282,22 +177,9 @@ function ErrorSummary({ errors }: { errors: Record<string, string> }) {
 
 `aria-describedby` で強度表示を紐付け、`aria-live="polite"` で変化時にSRが更新する。
 
-### ファイルアップロード・select・date input
+## 要素をどこまで作り替えるか
 
-**ファイルアップロード**: ネイティブ `<input type="file">` を `visually-hidden` で隠し、カスタムボタンをトリガーにするのが一般的なパターンである。
-
-```tsx
-const inputRef = useRef<HTMLInputElement>(null);
-<input ref={inputRef} type="file" id="upload" className="visually-hidden"
-       accept="image/png,image/jpeg" onChange={handleChange} />
-<button type="button" onClick={() => inputRef.current?.click()}>
-  ファイルを選択
-</button>
-```
-
-**selectのスタイリング**: `appearance: none` + CSSで矢印を消してカスタムアイコンを被せる。ドロップダウン内部まで制御するにはRadix UI等のヘッドレスライブラリが必要。
-
-**date input**: ブラウザ間でUIが異なるため、(1) ネイティブ + min/maxで簡易対応 (2) react-datepicker等のライブラリ (3) 年/月/日のselect分割、の3択から要件に応じて選択する。
+`select` や `input type="date"` は見た目を揃えたくなるが、作り替えるほどキーボード操作と支援技術への対応を自前で持つことになる。個々のコントロールで何が必要になるかは「Formのアクセシビリティ」の「よくあるフォームの課題と問題点」で扱う。
 
 :::message
 **カスタマイズの優先順位**: (1) ネイティブ要素そのまま (2) `appearance: none` + CSS (3) ヘッドレスUIライブラリ (4) フルカスタム（最後の手段）
@@ -331,20 +213,13 @@ A. コード記述量の削減　B. 入力ごとの再レンダリング回避�
 **正解: B** -- 制御コンポーネントではonChangeのたびにフォーム全体が再描画される。非制御 + refで不要な再レンダリングを抑制する。
 :::
 
-:::details理解度チェック: role="alert" の効果
-**問題**: エラーメッセージに `role="alert"` を付ける効果はどれか。
-
-A. 赤色で表示　B. アニメーション付き表示　C. SRが即座に読み上げ　D. コンソールにログ出力
-
-**正解: C** -- ライブリージョンの一種。DOM挿入時にSRが自動的に内容を読み上げる。視覚的変化はなく支援技術向けの情報である。
-:::
-
 ## まとめ
 
 - HTML構造: `form` > `fieldset` > `legend` + `label` + `input` の階層を守る
 - ラベル: すべての入力に `label` を紐付ける。`placeholder` はラベルの代替にならない
 - グループ化: ラジオ群や関連フィールドは `fieldset` + `legend` で括る
 - バリデーション: JSメインにネイティブ属性をセマンティクスとして併用
-- エラー表示: `aria-describedby` + `role="alert"` で支援技術に通知
 - React: 大規模フォームにはReact Hook Form。非制御ベースで高パフォーマンス
 - カスタマイズ: ネイティブ優先、ヘッドレスUI、フルカスタムの順で検討
+
+エラーの伝達、必須の表現、送信中の状態、autocompleteは「Formのアクセシビリティ」で扱う。
