@@ -3,7 +3,7 @@ title: "Claude Fable 5の挙動をOpus 4.8で再現する — 「賢さ」を検
 emoji: "🧪"
 type: "tech"
 topics: ["claudecode", "anthropic", "llm", "promptengineering", "ai"]
-published: false
+published: true
 ---
 
 ## はじめに
