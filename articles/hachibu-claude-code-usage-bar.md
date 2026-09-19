@@ -8,7 +8,7 @@ published: false
 
 ## これは何か
 
-[Hachibu](https://github.com/BoxPistols/hachibu)は、Claude Codeのモデル、effort、使用率を、Macの画面の最前面に常駐する小さなバーに出すmacOSアプリです。MITライセンスで公開しています。Anthropicとは関係のない、個人が作った非公式のツールです。
+[Hachibu](https://github.com/BoxPistols/hachibu)は、Claude Codeのモデル、effort、使用率を、Macの画面の最前面に常駐する小さなバーに出すmacOSアプリです。MITライセンスで公開しています。Anthropicとは関係のない、個人が作った非公式のツールです。紹介ページは<https://cc-hachibu.vercel.app/>で、実寸のバーを動かして試せます。
 
 ![バーの表示](https://raw.githubusercontent.com/BoxPistols/hachibu/main/docs/images/strip-basic.png)
 
@@ -147,6 +147,12 @@ GUIの確認で窓を出したりカーソルを動かしたりすると、そ�
 Developer IDでの署名と公証はまだ受けていません。ダウンロードした利用者は、初回に「システム設定」＞「プライバシーとセキュリティ」で「このまま開く」を押す必要があります。READMEには、この手順を画面の画像付きで書きました。許可する前に確かめる方法として、ソースからのビルド、SHA-256の照合、アプリが読むものと送るものの一覧も載せています。
 
 署名と公証、Homebrew cask、Mac App Storeでの配布は、issueに積んであります。App StoreはSandboxが必須で、キーチェーンの項目を読めないため、任意の使用率APIは提供できなくなります。
+
+### 紹介ページも作った
+
+LPは同じリポジトリの`site/`に置き、Next.jsの静的書き出しでVercelに出しています。バーとメニューバーのメーターは画像ではなく、アプリと同じ寸法と比率でSVGとCSSで組み直したものです。週枠の使用率をスライダーで動かすと、70%で黄、90%で赤に変わります。入れる前に、大きさと見え方を確かめられます。
+
+ドメインは`hachibu`が埋まっていたので`cc-hachibu`にしました。「腹八分」から名前を取った食事記録アプリが先にあり、こちらは分野が違うので名前はそのままにして、READMEとサイトに別物である旨を書いています。
 
 ## 今後
 
