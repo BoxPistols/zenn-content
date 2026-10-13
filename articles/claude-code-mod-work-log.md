@@ -12,15 +12,17 @@ Claude Codeのmodは、Claude Code自身の画面や動きに手を加える小�
 
 この記事では、Claude Codeが実行したコマンドと変更したファイルを、色分けした一覧としてパネルに出すmod「work-log」を作ります。modを作ったことがない人が、最初の1つを動かすところから配布するところまでを順に追えるように書きました。
 
-なお、modの仕組みは早期提供の段階にあり、予告なく変わることがあると型定義のファイルに書かれています。この記事はClaude Code 2.1.295で確かめた内容です。
+なお、modの仕組みは早期提供の段階にあり、予告なく変わることがあると型定義のファイルに書かれています。この記事はClaude Code 2.1.296で確かめた内容です。
 
 ## 作るもの
 
-<!-- 画像: 完成したパネル（架空の作業で撮ったもの） -->
+![凡例の✎を押して書き換えのコマンドに絞ったパネル。その下に変更したファイルの一覧が並ぶ](/images/claude-code-mod-work-log/01-panel.png)
+
+画像は、OSSの[enddayd](https://github.com/BoxPistols/enddayd)の作業中に撮ったものです。
 
 Claude Codeに作業を任せていると、コマンドの実行やファイルの変更が会話の中を流れていき、いま何をしているのか、どこで失敗したのかを後から追いにくくなります。work-logはこれを1枚のパネルにまとめます。
 
-パネルの1行目には、実行したコマンドを1件1マスで古い順に並べます。マスの色はコマンドの種類（調べる、書き換え、検証、git、その他）で分け、失敗したものは赤の「✗」にします。色の並びを見ると、作業がいま調べる段階なのか、書き換えや検証の段階なのかが分かります。その下に、コマンドの一覧と変更したファイルの一覧を左右に並べます。行を押すと、コマンドの全文と結果の先頭が開きます。
+パネルの1行目には、実行したコマンドを1件1マスで古い順に並べます。マスの色はコマンドの種類（調べる、書き換え、検証、git、その他）で分け、失敗したものは赤の「✗」にします。色の並びを見ると、作業がいま調べる段階なのか、書き換えや検証の段階なのかが分かります。その下に、コマンドの一覧と変更したファイルの一覧を左右に並べます。幅が狭いときは上下に並べます。行を押すと、コマンドと結果の先頭が開きます。
 
 ## 最小のmodを動かす
 
@@ -118,12 +120,13 @@ declare module 'claude-code' {
 パネルの中身は`ui.render`で描きます。記録を`read`で読むと、記録が更新されたときに描き直されます。
 
 ```tsx
+import { atom, read, update } from 'claude-code'
+
 on('ui.render', { component: 'Pane', requestId: 'work-log' }, async ($, e) => {
   const { Box, Text } = $.ui.resolve(e)
   const list = await read($, commands)
-  // パネル本体に収まる行数と幅
+  // パネル本体に収まる行数
   const rows = e.props.scroll.bodyRows
-  const columns = e.props.bodyColumns
 
   return (
     <Box flexDirection="column">
@@ -150,7 +153,7 @@ const toggle = (id: string) => () => update($, selected, now => (now === id ? ''
 </Button>
 ```
 
-開いている行を`$.state`に持ち、開いているときは一覧の代わりにコマンドの全文と結果の先頭3行を描きます。同じ行をもう一度押すと閉じます。
+開いている行を`$.state`に持ち、開いているときは一覧の代わりにコマンド（8行まで）と結果の先頭3行を描きます。同じ行をもう一度押すと閉じます。
 
 コマンドの種類は、中身を正規表現で見て決めています。検証（`test`、`tsc`など）、git、書き換え（`sed -i`、`cp`など）、調べる（`ls`、`grep`など）の順に当てはめ、どれにも当たらなければ「その他」にします。
 
@@ -213,19 +216,30 @@ test('秘密の値は伏せ字で記録され、パネルにも出ない', async
 
 ## 配布する
 
-<!-- 公開するリポジトリの場所が決まったら書く -->
+work-logは[BoxPistols/claude-work-log](https://github.com/BoxPistols/claude-work-log)で公開しています。
 
 modのリポジトリに`.claude-plugin/marketplace.json`を置くと、使う人は次のコマンドで入れられます。
 
 ```
-/plugin install work-log --marketplace <owner>/<repo>
+/plugin install work-log --marketplace BoxPistols/claude-work-log
 ```
+
+`marketplace.json`には、リポジトリの名前と、そこに入っているmodの一覧を書きます。
+
+```json
+{
+  "name": "claude-work-log",
+  "description": "実行したコマンドと変更したファイルをパネルに出すmod",
+  "owner": { "name": "BoxPistols" },
+  "plugins": [{ "name": "work-log", "source": "./" }]
+}
+```
+
+Claude Codeがmodを読み込むたびに書く型の定義（`.claude-plugin/types/`）は、`.gitignore`でリポジトリから外しています。
 
 ## 手伝ってほしいこと
 
-<!-- リポジトリにissueを立てたらリンクを足す -->
-
-work-logのリポジトリには、初めて手を入れる人が取り組みやすいissueを用意しています。
+work-logのリポジトリには、初めて手を入れる人が取り組みやすいissueを[good first issue](https://github.com/BoxPistols/claude-work-log/labels/good%20first%20issue)として用意しています。
 
 - 種類分けに、よく使うコマンドを足す
 - 伏せ字にする形式を足す
