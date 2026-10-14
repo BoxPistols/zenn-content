@@ -237,7 +237,7 @@ modのリポジトリに`.claude-plugin/marketplace.json`を置くと、使う�
 
 Claude Codeがmodを読み込むたびに書く型の定義（`.claude-plugin/types/`）は、`.gitignore`でリポジトリから外しています。
 
-## 手伝ってほしいこと
+## 初めて手を入れる人向けのissue
 
 work-logのリポジトリには、初めて手を入れる人が取り組みやすいissueを[good first issue](https://github.com/BoxPistols/claude-work-log/labels/good%20first%20issue)として用意しています。
 
@@ -246,4 +246,4 @@ work-logのリポジトリには、初めて手を入れる人が取り組みや
 - 英語の表示に切り替えられるようにする
 - ファイルの詳細に、変更した行数を出す
 
-どれもファイル1つと、テスト1つで完結する大きさです。modを作ってみたい人の最初の1件にしてください。
+どれもファイル1つと、テスト1つで完結する大きさです。modを作ってみたい人が、最初に取り組む題材に使えます。
