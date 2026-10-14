@@ -3,7 +3,7 @@ title: "はじめてのClaude Code mod：実行したコマンドを色分けし
 emoji: "🧩"
 type: "tech"
 topics: ["claudecode", "typescript", "ai", "oss"]
-published: false
+published: true
 ---
 
 ## modとは
