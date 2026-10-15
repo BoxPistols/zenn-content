@@ -16,9 +16,9 @@ Claude Codeのmodは、Claude Code自身の画面や動きに手を加える小�
 
 ## 作るもの
 
-![凡例の✎を押して書き換えのコマンドに絞ったパネル。その下に変更したファイルの一覧が並ぶ](/images/claude-code-mod-work-log/01-panel.png)
+![実行したコマンドを新しい順に並べたパネル。その下に変更したファイルの一覧が並ぶ](/images/claude-code-mod-work-log/01-panel.png)
 
-画像は、OSSの[enddayd](https://github.com/BoxPistols/enddayd)の作業中に撮ったものです。
+画像は、この記事を書いて公開するまでの作業を記録したパネルです。
 
 Claude Codeに作業を任せていると、コマンドの実行やファイルの変更が会話の中を流れていき、いま何をしているのか、どこで失敗したのかを後から追いにくくなります。work-logはこれを1枚のパネルにまとめます。
 
