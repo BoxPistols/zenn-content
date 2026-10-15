@@ -39,7 +39,7 @@ work-log/
 `plugin.json`はmodの名前と説明です。
 
 ```json
-{ "name": "work-log", "version": "0.1.0", "description": "変更したファイルと実行したコマンドを横のパネルに一覧で出す" }
+{ "name": "work-log", "version": "0.2.0", "description": "変更したファイルと実行したコマンドを横のパネルに一覧で出す" }
 ```
 
 `hooks.json`は、読み込むファイルを指します。
